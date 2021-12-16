@@ -9,11 +9,13 @@ use Google_Service_Gmail_Message;
 * Returns an authorized API client.
 * @return Google_Client the authorized client object
 */
-class SendEmail {
-    function toJAinaba() {
+class SendEmail extends GoogleClient
+{
+    public function toJAinaba()
+    {
         // Get the API client and construct the service object.
-        $client = new GoogleClient();
-        $service = new Google_Service_Gmail($client->getClient());
+        $client = $this->getClient();
+        $service = new Google_Service_Gmail($client);
         
         $user = 'me';
         $strSubject = date('M d, Y h:i:s A').':blank e-mail';
@@ -24,10 +26,12 @@ class SendEmail {
         $strRawMessage .= "Content-Type: text/html; charset=utf-8\r\n";
         $strRawMessage .= 'Content-Transfer-Encoding: quoted-printable' . "\r\n\r\n";
         //$strRawMessage .= "this is a message\r\n";
+
         // The message needs to be encoded in Base64URL
         $mime = rtrim(strtr(base64_encode($strRawMessage), '+/', '-_'), '=');
         $msg = new Google_Service_Gmail_Message();
         $msg->setRaw($mime);
+
         //The special value **me** can be used to indicate the authenticated user.
         $service->users_messages->send("me", $msg);
     }

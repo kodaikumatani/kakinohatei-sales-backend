@@ -9,8 +9,10 @@ use Google_Service_Gmail;
 * Returns an authorized API client.
 * @return Google_Client the authorized client object
 */
-class GoogleClient  {
-    function getClient() {
+class GoogleClient
+{
+    protected function getClient()
+    {
         $client = new Google_Client();
         $client->setApplicationName('Gmail API PHP Quickstart');
         $client->setScopes(

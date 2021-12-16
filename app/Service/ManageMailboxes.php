@@ -9,12 +9,13 @@ use Google_Service_Gmail_ModifyMessageRequest;
 * Returns an authorized API client.
 * @return Google_Client the authorized client object
 */
-class ManageMailboxes   {
-
-    function getMessage() {
+class ManageMailboxes extends GoogleClient
+{
+    public function getMessage()
+    {
         // Get the API client and construct the service object.
-        $client = new GoogleClient();
-        $service = new Google_Service_Gmail($client->getClient());
+        $client = $this->getClient();
+        $service = new Google_Service_Gmail($client);
         $mods = new Google_Service_Gmail_ModifyMessageRequest();
 
         $user = 'me';
@@ -41,7 +42,8 @@ class ManageMailboxes   {
         return $this->castArray($mails);
     }
 
-    function castArray($messages) {
+    private function castArray($messages)
+    {
         $data = [];
         foreach ($messages as $message) {
             // Divide sales-info by store.
@@ -94,7 +96,8 @@ class ManageMailboxes   {
         return $data;
     }
 
-    function editDate($text) {
+    private function editDate($text)
+    {
         $text = str_replace(' (', date('Y').'-',$text);
         $text = str_replace('月', '-',$text);
         $text = str_replace('日', ' ',$text);
