@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\Service\ManageMailboxes;
+use Infrastructure\Database\SalesTableController;
 
 class ReadMessage extends Command
 {
@@ -38,8 +38,7 @@ class ReadMessage extends Command
      */
     public function handle()
     {
-        $client = new ManageMailboxes();
-        $str = $client->getMessage();
-        print_r($str);
+        $client = new SalesTableController();
+        $client->saveSalesData();
     }
 }
