@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use Infrastructure\Database\SalesTableController;
+use Infrastructure\Database\Controller\SalesTableController;
 
 class ReadMessage extends Command
 {

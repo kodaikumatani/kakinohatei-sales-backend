@@ -1,6 +1,6 @@
 <?php
 
-namespace Infrastructure\Database;
+namespace Infrastructure\Database\Controller;
 
 use App\Service\ManageMailboxes;
 
