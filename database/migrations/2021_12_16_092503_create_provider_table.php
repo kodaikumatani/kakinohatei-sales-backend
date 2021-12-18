@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateProductorTable extends Migration
+class CreateProviderTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,10 @@ class CreateProductorTable extends Migration
      */
     public function up()
     {
-        Schema::create('productor', function (Blueprint $table) {
+        Schema::create('provider', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedSmallInteger('productor_id');
-            $table->string('productor', 100);
+            $table->unsignedSmallInteger('provider_id');
+            $table->string('provider', 100);
             $table->timestamps();
             $table->softDeletes();
         });
@@ -29,6 +29,6 @@ class CreateProductorTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('productor');
+        Schema::dropIfExists('provider');
     }
 }

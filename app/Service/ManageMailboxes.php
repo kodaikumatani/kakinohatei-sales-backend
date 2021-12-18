@@ -51,10 +51,10 @@ class ManageMailboxes extends GoogleClient
             $split_str = '-----------------------------------------------------------------------';
             $split_message = explode($split_str, $message);
             $sales_store = array_slice($split_message,1);
-            // Get proctorID and proctor name
+            // Get proctor_id and proctor name
             $split_header = explode("\n",$split_message[0]);
-            $productorID = str_replace(['生産者コード:',"\r"],'',$split_header[0]);
-            $productor = str_replace(" 様\r",'',$split_header[1]);
+            $provider_id = str_replace(['生産者コード:',"\r"],'',$split_header[0]);
+            $provider = str_replace(" 様\r",'',$split_header[1]);
 
             foreach ($sales_store as $str) {
                 // Divide a newline character
@@ -81,8 +81,8 @@ class ManageMailboxes extends GoogleClient
                     }
                     
                     $data[] = [
-                        'productorID' => $productorID,
-                        'productor' => $productor,
+                        'provider_id' => $provider_id,
+                        'provider' => $provider,
                         'store' => $store,
                         'record_date' => $record_date,
                         'product' => $product,
