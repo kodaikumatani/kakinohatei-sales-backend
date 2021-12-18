@@ -15,7 +15,7 @@ class CreateSalesTable extends Migration
     {
         Schema::create('sales', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedSmallInteger('productor_id');
+            $table->unsignedSmallInteger('provider_id');
             $table->unsignedSmallInteger('store_id');
             $table->date('reccord_date');
             $table->unsignedSmallInteger('product_id');

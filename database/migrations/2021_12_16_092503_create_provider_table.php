@@ -16,7 +16,7 @@ class CreateProviderTable extends Migration
         Schema::create('provider', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedSmallInteger('provider_id');
-            $table->string('provider', 100);
+            $table->string('name', 100);
             $table->timestamps();
             $table->softDeletes();
         });
