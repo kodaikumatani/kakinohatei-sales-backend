@@ -75,9 +75,9 @@ class ManageMailboxes extends GoogleClient
                     $price = str_replace('円','', $sales_product[1]);
                     $quantity = str_replace('個','',$sales_product[2]);
                     if (isset($sales_product[4])) {
-                        $total = str_replace('個)','',$sales_product[4]);
+                        $store_sum = str_replace('個)','',$sales_product[4]);
                     } else {
-                        $total = $quantity;
+                        $store_sum = $quantity;
                     }
                     
                     $data[] = [
@@ -88,7 +88,7 @@ class ManageMailboxes extends GoogleClient
                         'product' => $product,
                         'price' => $price,
                         'quantity' => $quantity,
-                        'total' => $total
+                        'store_sum' => $store_sum
                     ];
                 }
             }

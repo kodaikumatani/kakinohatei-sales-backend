@@ -21,7 +21,7 @@ class CreateSalesTable extends Migration
             $table->unsignedSmallInteger('product_id');
             $table->unsignedSmallInteger('price');
             $table->unsignedSmallInteger('quantity');
-            $table->unsignedSmallInteger('total');
+            $table->unsignedSmallInteger('store_sum');
             $table->timestamps();
             $table->softDeletes();
         });
