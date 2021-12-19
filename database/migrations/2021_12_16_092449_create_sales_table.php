@@ -17,7 +17,7 @@ class CreateSalesTable extends Migration
             $table->bigIncrements('id');
             $table->unsignedSmallInteger('provider_id');
             $table->unsignedSmallInteger('store_id');
-            $table->date('reccord_date');
+            $table->date('record_date');
             $table->unsignedSmallInteger('product_id');
             $table->unsignedSmallInteger('price');
             $table->unsignedSmallInteger('quantity');
