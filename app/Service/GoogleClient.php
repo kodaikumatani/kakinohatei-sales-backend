@@ -15,11 +15,11 @@ class GoogleClient
     {
         $client = new Google_Client();
         $client->setApplicationName('Gmail API PHP Quickstart');
-        $client->setScopes(
+        $client->setScopes([
             Google_Service_Gmail::GMAIL_READONLY,
             Google_Service_Gmail::GMAIL_SEND,
             Google_Service_Gmail::GMAIL_MODIFY
-        );
+        ]);
         $client->setAuthConfig('creds/credentials.json');
         $client->setAccessType('offline');
         $client->setPrompt('select_account consent');
