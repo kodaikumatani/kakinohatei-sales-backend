@@ -37,7 +37,7 @@ class ManageMailboxes extends GoogleClient
 
             // Remove the unread label.
             $mods->setRemoveLabelIds(['UNREAD']);
-            //$service->users_messages->modify('me', $message_id, $mods);
+            $service->users_messages->modify('me', $message_id, $mods);
         }
         return $this->castArray($mails);
     }

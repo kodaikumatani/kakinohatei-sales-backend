@@ -2,8 +2,8 @@
 
 namespace Infrastructure\Database\Controller;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
 use Infrastructure\Database\Model\Provider;
 
 class ProviderTableController extends Controller
