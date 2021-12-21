@@ -6,14 +6,13 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Infrastructure\Database\Model\Store;
 
-class StoreTableController extends Controller
+class StoresController extends Controller
 {
     public function getId($name)
     {
-        $client = new Store();
         if (DB::table('stores')->where('name', $name)->doesntExist()) {
             // If it's an unregistered store, add it.
-            $client->fill(['name' => $name])->save();
+            Store::create(['name' => $name]);
         }
         return DB::table('stores')->where('name', $name)->value('id');
     }

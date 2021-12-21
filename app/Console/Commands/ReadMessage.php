@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use Infrastructure\Database\Controller\SalesTableController;
+use Infrastructure\Database\Controller\SalesController;
 
 class ReadMessage extends Command
 {
@@ -38,7 +38,7 @@ class ReadMessage extends Command
      */
     public function handle()
     {
-        $client = new SalesTableController();
+        $client = new SalesController();
         $client->saveSalesData();
     }
 }

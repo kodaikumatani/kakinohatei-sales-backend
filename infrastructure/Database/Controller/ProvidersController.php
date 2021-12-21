@@ -6,18 +6,16 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Infrastructure\Database\Model\Provider;
 
-class ProviderTableController extends Controller
+class ProvidersController extends Controller
 {
     public function getId($providerID, $name)
     {
-        $client = new Provider();
         if (DB::table('providers')->where('provider_id', $providerID)->doesntExist()) {
             // If it's an unregistered provider, add it.
-            $client->fill([
+            Provider::create([
                 'provider_id' => $providerID,
                 'name' => $name
             ]);
-            $client->save();
         }
         return $providerID;
     }

@@ -7,16 +7,16 @@ use App\Http\Controllers\Controller;
 use App\Service\ManageMailboxes;
 use Infrastructure\Database\Model\Sales;
 
-class SalesTableController extends Controller
+class SalesController extends Controller
 {
     public function saveSalesData()
     {
-        $mailclient = new ManageMailboxes();
-        $provider = new ProviderTableController();
-        $store = new StoreTableController();
-        $product = new ProductTableController();
-       
-        foreach($mailclient->getMessage() as $message) {
+        $mail = new ManageMailboxes();
+        $provider = new ProvidersController();
+        $store = new StoresController();
+        $product = new ProductsController();
+
+        foreach($mail->getMessage() as $message) {
             $providerID = $provider->getId($message['provider_id'], $message['provider']);
             $storeID = $store->getId($message['store']);
             $productID = $product->getId($message['product']);
@@ -30,8 +30,7 @@ class SalesTableController extends Controller
 
             if ($query->doesntExist()) {
                 // If it's an unregistered record, add it.
-                $sales = new Sales();
-                $sales->fill([
+                Sales::create([
                     'provider_id' => $providerID,
                     'store_id' => $storeID,
                     'record_date' => $message['record_date'],
@@ -40,7 +39,6 @@ class SalesTableController extends Controller
                     'quantity' => $message['quantity'],
                     'store_sum' => $message['store_sum']
                 ]);
-                $sales->save();
             }
         }
     }

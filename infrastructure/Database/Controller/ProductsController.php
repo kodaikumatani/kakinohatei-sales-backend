@@ -6,11 +6,10 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Infrastructure\Database\Model\Product;
 
-class ProductTableController extends Controller
+class ProductsController extends Controller
 {
     public function getId($name)
     {
-        $client = new Product();
         if (DB::table('products')->where('name', $name)->doesntExist()) {
             // If there are no products in the table, add them.
             $productID = 999;
@@ -19,11 +18,10 @@ class ProductTableController extends Controller
                 $exist = DB::table('products')->where('product_id', $productID)->exists();
             } while ($exist);
             
-            $client->fill([
+            Product::create([
                 'product_id' => $productID,
                 'name' => $name
             ]);
-            $client->save();
         }
         return DB::table('products')->where('name', $name)->value('product_id');
     }
