@@ -12,9 +12,10 @@ class Sales extends Model
      * @var array
      */
     protected $fillable = [
+        "received_at",
         "provider_id",
         "store_id",
-        "record_date",
+        "recorded_at",
         "product_id",
         "price",
         "quantity",

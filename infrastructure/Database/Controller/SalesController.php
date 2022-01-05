@@ -17,23 +17,16 @@ class SalesController extends Controller
         $product = new ProductsController();
 
         foreach($mail->getMessage() as $message) {
-            $providerID = $provider->getId($message['provider_id'], $message['provider']);
-            $storeID = $store->getId($message['store']);
-            $productID = $product->getId($message['product']);
-
-            $query = DB::table('sales')->where([
-                'provider_id' => $providerID,
-                'store_id' => $storeID,
-                'record_date' => $message['record_date'],
-                'product_id' => $productID
-            ]);
-
-            if ($query->doesntExist()) {
-                // If it's an unregistered record, add it.
+            if (!is_null($message)) {
+                $providerID = $provider->getId($message['provider_id'], $message['provider']);
+                $storeID = $store->getId($message['store']);
+                $productID = $product->getId($message['product']);
+                    // If it's an unregistered record, add it.
                 Sales::create([
+                    'received_at' => $message['received_at'],
                     'provider_id' => $providerID,
                     'store_id' => $storeID,
-                    'record_date' => $message['record_date'],
+                    'recorded_at' => $message['recorded_at'],
                     'product_id' => $productID,
                     'price' => $message['price'],
                     'quantity' => $message['quantity'],

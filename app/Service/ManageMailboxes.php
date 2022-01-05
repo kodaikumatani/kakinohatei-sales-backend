@@ -22,69 +22,70 @@ class ManageMailboxes extends GoogleClient
         $optParams = [
             'maxResults' => '10',
             'labelIds' => 'UNREAD',
-            'q' => 'from:tyokuhan@jainaba.com',
+            'q' => "subject:JA鳥取いなば直売所売上速報 from:".config('mail.to.address')
         ];
         // Get a list of emails that match the conditions.
-        $messages = $service->users_messages->listUsersMessages($user, $optParams);
+        $messages = $service->users_messages->listUsersMessages($user,$optParams);
         $mails = [];
         foreach ($messages->getMessages() as $message)   {
             $message_id = $message->getID();
-            $message_contents = $service->users_messages->get($user, $message_id);
+            $message_contents = $service->users_messages->get($user,$message_id);
+            $internal_date = substr($message_contents->getInternalDate(),0,-3);
+            $received_at = date('Y-m-d H:i:s',$internal_date);
             $encode_bytes = $message_contents->getPayload()->getBody()->getData();
-            $trance_encode_bytes = str_replace(array('-', '_'), array('+', '/'),  $encode_bytes);
+            $trance_encode_bytes = str_replace(array('-', '_'),array('+', '/'),$encode_bytes);
             $decoded_bytes = base64_decode($trance_encode_bytes);
-            $mails[] = $decoded_bytes;
-
+            $mails = array_merge($mails,$this->castToArray($received_at,$decoded_bytes));
             // Remove the unread label.
             $mods->setRemoveLabelIds(['UNREAD']);
             $service->users_messages->modify('me', $message_id, $mods);
         }
-        return $this->castArray($mails);
+        return $mails;
     }
 
-    private function castArray($messages)
+    private function castToArray($received_at,$message)
     {
         $data = [];
-        foreach ($messages as $message) {
-            // Divide sales-info by store.
-            $message = explode("\n【", $message)[0];
-            $split_str = '-----------------------------------------------------------------------';
-            $split_message = explode($split_str, $message);
-            $sales_store = array_slice($split_message,1);
+        $split = "/構成比\r\n-+\r\n|\n=+\r\n|\n\r\n【|】 【|】\r\n\r\n=+\r\n\r\n/";
+        $split_message = preg_split($split,$message);
+        
+        if(strpos($split_message[1],'売上データはありません。') !== false) {
+            return [NULL];
+        } else {
             // Get proctor_id and proctor name
-            $split_header = explode("\n",$split_message[0]);
-            $provider_id = str_replace(['生産者コード:',"\r"],'',$split_header[0]);
+            $split_header = preg_split("/\r\n/",$split_message[0]);
+            $provider_id = str_replace('生産者コード:','',$split_header[0]);
             $provider = str_replace(" 様\r",'',$split_header[1]);
-
+            // Divide sales-info by store.
+            $sales_store = preg_split("/\n-+\r\n/", $split_message[2]);
+    
             foreach ($sales_store as $str) {
                 // Divide a newline character
-                $store_info = explode("\n", $str);
-                // Keep decent form of list
-                array_shift($store_info);
-                array_pop($store_info);
-                $sales_info = array_slice($store_info,1);
+                $store_info = preg_split("/現在\)\r\n/",$str);
                 // Get store name and record date
-                $store = explode(' :',$store_info[0])[0];
-                $record_date = $this->editDate(explode(':',$store_info[0])[1]);
-
-                foreach ($sales_info as $str)   {
-                    $text = explode(' ', explode("\r",$str)[0]);
-                    $sales_product = array_values(array_filter($text));
+                $store_record = preg_split('/\s:\s/',$store_info[0]);
+                $store = $store_record[0];
+                $recorded_at = $this->editDate($received_at,$store_record[1]);
+                $product_info = preg_split("/\n/", $store_info[1]);
+    
+                foreach ($product_info as $str)   {
                     // Get Sales infomation
-                    $product = str_replace('（鳥取県産）','', $sales_product[0]);
-                    $price = str_replace('円','', $sales_product[1]);
-                    $quantity = str_replace('個','',$sales_product[2]);
-                    if (isset($sales_product[4])) {
-                        $store_sum = str_replace('個)','',$sales_product[4]);
+                    $sales_product = preg_split("/\s+/",$str);
+                    $product = str_replace('（鳥取県産）','',$sales_product[1]);
+                    $price = str_replace('円','',$sales_product[2]);
+                    $quantity = str_replace('個','',$sales_product[3]);
+                    if (isset($sales_product[5])) {
+                        $store_sum = str_replace('個)','',$sales_product[5]);
                     } else {
                         $store_sum = $quantity;
                     }
                     
                     $data[] = [
+                        'received_at' => $received_at,
                         'provider_id' => $provider_id,
                         'provider' => $provider,
                         'store' => $store,
-                        'record_date' => $record_date,
+                        'recorded_at' => $recorded_at,
                         'product' => $product,
                         'price' => $price,
                         'quantity' => $quantity,
@@ -92,18 +93,18 @@ class ManageMailboxes extends GoogleClient
                     ];
                 }
             }
+            return $data;
         }
-        return $data;
     }
 
-    private function editDate($text)
+    private function editDate($received_at,$text)
     {
-        $text = str_replace(' (', date('Y').'-',$text);
+        $year = date('Y',strtotime($received_at));
+        $text = str_replace('(', $year.'-',$text);
         $text = str_replace('月', '-',$text);
         $text = str_replace('日', ' ',$text);
         $text = str_replace('時', ':',$text);
-        $text = str_replace('分', ':',$text);
-        $text = str_replace("現在)\r", '00',$text);
+        $text = str_replace('分', ':00',$text);
         return $text;
     }  
 }
