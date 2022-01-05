@@ -33,8 +33,7 @@ export default function Deposits() {
     <React.Fragment>
       <Title>Daily Sales</Title>
       <Typography component="p" variant="h4">
-        ¥
-        {daily.map((d) => (d.sales))}
+        ¥{daily.map((d) => (d.sales))}
       </Typography>
       <Typography color="textSecondary" className={classes.depositContext}>
         {daily.map((d) => (d.received))}

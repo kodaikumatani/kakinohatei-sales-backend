@@ -16,7 +16,7 @@ class Sales extends Model
 	
     public function details()
 	{
-		return $this->select('recorded_at','stores.name as store','products.name as product','price','quantity','store_sum')
+		return $this->select('sales.id','recorded_at','stores.name as store','products.name as product','price','quantity','store_sum')
 			->join('stores','stores.id','=','sales.store_id')
 			->join('products','products.id','=','sales.product_id')
 			->whereRaw('received_at=(select received_at from sales group by received_at order by received_at desc limit 1)')

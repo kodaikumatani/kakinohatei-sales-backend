@@ -52,7 +52,7 @@ export default function Orders() {
         </TableHead>
         <TableBody>
           {details.map((detail) => (
-            <TableRow>
+            <TableRow key={detail.id}>
               <TableCell>{detail.store}</TableCell>
               <TableCell>{detail.product}</TableCell>
               <TableCell className={classes.numeric}>{detail.price}</TableCell>
