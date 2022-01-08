@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import ReactDOM from 'react-dom';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
@@ -22,6 +23,7 @@ import NotificationsIcon from '@material-ui/icons/Notifications';
 import { mainListItems, secondaryListItems } from './listItems';
 import Chart from './Chart';
 import Daily from './Daily';
+import Monthly from './Monthly';
 import Details from './Details';
 
 function Copyright() {
@@ -114,13 +116,13 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'column',
   },
   fixedHeight: {
-    height: 240,
+    height: 150,
   },
 }));
 
 export default function App() {
   const classes = useStyles();
-  const [open, setOpen] = React.useState(true);
+  const [open, setOpen] = React.useState(false);
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -128,6 +130,14 @@ export default function App() {
     setOpen(false);
   };
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
+  const [daily, setDaily] = useState([]);
+  useEffect(() => {
+    getDaily()
+  },[])
+  const getDaily = async () => {
+    const response = await axios.get('/api/sales');
+    setDaily(response.data.daily)
+  }
 
   return (
     <div className={classes.root}>
@@ -187,7 +197,14 @@ export default function App() {
                 <Daily />
               </Paper>
             </Grid>
+            {/* Recent Monthly */}
+            <Grid item xs={12} md={6} lg={3}>
+              <Paper className={fixedHeightPaper}>
+                <Monthly />
+              </Paper>
+            </Grid>
             {/* Recent Details */}
+            
             <Grid item xs={12}>
               <Paper className={classes.paper}>
                 <Details />
