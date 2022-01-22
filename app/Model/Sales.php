@@ -3,7 +3,6 @@
 namespace App\model;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
 
 class Sales extends Model
 {
@@ -18,31 +17,54 @@ class Sales extends Model
 			->received_at;
 	}
 	
-	public function daily()
+	public function summary()
 	{
-		return $this
-			->selectRaw('max(received_at) as received, sum(price * quantity) as sales')
-			->where('received_at', $this->timeOfLastReceive())
-			->get()[0];
-	}
-	
-	public function monthly()
-	{
-		$this_monthly_mails = $this
+		$received_at = $this->timeOfLastReceive();
+		$daily = $this
+			->selectRaw('sum(price * quantity) as summary')
+			->where('received_at', $received_at)
+			->get()[0]
+			->summary;
+		
+		$this_month_mails = $this
 			->selectRaw("max(received_at) as date")
 			->groupByRaw("DATE_FORMAT(received_at, '%Y%m%d')")
-			->where('received_at', 'like', date('Y-m').'%')
+			->where('received_at', 'like', substr($received_at,0,7).'%')
 			->get();
 		
-		$sum = 0;
-		foreach($this_monthly_mails as $daily) {
-			$sum += $this
+		$monthly = 0;
+		foreach($this_month_mails as $mail) {
+			$monthly += $this
 				->selectRaw('sum(price * quantity) as sales')
-				->where('received_at', $daily->date)
+				->where('received_at', $mail->date)
 				->get()[0]
 				->sales;
 		}
-		return (object)array('received' => $this->timeOfLastReceive(), 'sales' => $sum);
+		return array('received'=>$received_at, 'daily'=>$daily, 'monthly'=>$monthly);
+	}
+	
+	public function chart()
+	{
+		$data = [];
+		$lastReceive = substr($this->timeOfLastReceive(),0,11);
+		
+		for ($hour=10; $hour<=19; $hour++) {
+			$query = $lastReceive.$hour.'%';
+			$lastTimeInHour = $this
+				->selectRaw('max(received_at) as lastdate')
+				->where('received_at', 'like', $query)
+				->get()[0]
+				->lastdate;
+			
+			$salesHour = $this
+				->selectRaw('sum(price * quantity) as amount')
+				->where('received_at', $lastTimeInHour)
+				->get()[0]
+				->amount;
+				
+			$data[] = array('time' => $hour, 'amount' => (int)$salesHour);
+		}
+		return $data;
 	}
 	
     public function details()
@@ -55,7 +77,7 @@ class Sales extends Model
 				'products.name as product',
 				'price','quantity',
 				'store_sum'
-				)
+			)
 			->join('stores','stores.id','=','sales.store_id')
 			->join('products','products.id','=','sales.product_id')
 			->where('received_at', $this->timeOfLastReceive())

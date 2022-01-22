@@ -9,13 +9,13 @@ class SalesController extends Controller
 {
     public function index(Sales $sales)
     {
-        $daily = $sales->daily();
-        $monthly = $sales->monthly();
+        $summary = $sales->summary();
+        $chart = $sales->chart();
         $details = $sales->details();
 	    return response()->json([
-	        'daily' => $daily,
-	        'monthly' => $monthly,
+	        'summary' => $summary,
+	        'chart' => $chart,
 	        'details' => $details
-	        ]);
+	    ]);
     }
 }

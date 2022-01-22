@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React from 'react';
 import ReactDOM from 'react-dom';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
@@ -22,8 +21,7 @@ import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import { mainListItems, secondaryListItems } from './listItems';
 import Chart from './Chart';
-import Daily from './Daily';
-import Monthly from './Monthly';
+import Summary from './Summary';
 import Details from './Details';
 
 function Copyright() {
@@ -31,7 +29,7 @@ function Copyright() {
     <Typography variant="body2" color="textSecondary" align="center">
       {'Copyright © '}
       <Link color="inherit" href="https://mui.com/">
-        Your Website
+        JAinaba ERP
       </Link>{' '}
       {new Date().getFullYear()}
       {'.'}
@@ -116,7 +114,7 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'column',
   },
   fixedHeight: {
-    height: 150,
+    height: 300,
   },
 }));
 
@@ -130,14 +128,6 @@ export default function App() {
     setOpen(false);
   };
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
-  const [daily, setDaily] = useState([]);
-  useEffect(() => {
-    getDaily()
-  },[])
-  const getDaily = async () => {
-    const response = await axios.get('/api/sales');
-    setDaily(response.data.daily)
-  }
 
   return (
     <div className={classes.root}>
@@ -154,10 +144,10 @@ export default function App() {
             <MenuIcon />
           </IconButton>
           <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
-            Dashboard
+            JAinaba ERP
           </Typography>
           <IconButton color="inherit">
-            <Badge badgeContent={4} color="secondary">
+            <Badge badgeContent={0} color="secondary">
               <NotificationsIcon />
             </Badge>
           </IconButton>
@@ -177,34 +167,24 @@ export default function App() {
         </div>
         <Divider />
         <List>{mainListItems}</List>
-        <Divider />
-        <List>{secondaryListItems}</List>
       </Drawer>
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
         <Container maxWidth="lg" className={classes.container}>
           <Grid container spacing={3}>
-            {/* Chart 
+            {/* Recent Summary */}
+            <Grid item xs={12} md={4} lg={3}>
+              <Paper className={fixedHeightPaper}>
+                <Summary />
+              </Paper>
+            </Grid>
+            {/* Chart */}
             <Grid item xs={12} md={8} lg={9}>
               <Paper className={fixedHeightPaper}>
                 <Chart />
               </Paper>
             </Grid>
-            */}
-            {/* Recent Daily */}
-            <Grid item xs={12} md={4} lg={3}>
-              <Paper className={fixedHeightPaper}>
-                <Daily />
-              </Paper>
-            </Grid>
-            {/* Recent Monthly */}
-            <Grid item xs={12} md={6} lg={3}>
-              <Paper className={fixedHeightPaper}>
-                <Monthly />
-              </Paper>
-            </Grid>
             {/* Recent Details */}
-            
             <Grid item xs={12}>
               <Paper className={classes.paper}>
                 <Details />

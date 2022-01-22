@@ -24,13 +24,10 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Orders() {
   const classes = useStyles();
-
   const [details, setDetails] = useState([]);
-
   useEffect(() => {
     getDetails()
   },[])
-
   const getDetails = async () => {
     const response = await axios.get('/api/sales');
     setDetails(response.data.details)
@@ -47,7 +44,6 @@ export default function Orders() {
             <TableCell className={classes.numeric}>price</TableCell>
             <TableCell className={classes.numeric}>quantity</TableCell>
             <TableCell className={classes.numeric}>Store Sum</TableCell>
-            <TableCell>Retrieval Date</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -58,16 +54,17 @@ export default function Orders() {
               <TableCell className={classes.numeric}>{detail.price}</TableCell>
               <TableCell className={classes.numeric}>{detail.quantity}</TableCell>
               <TableCell className={classes.numeric}>{detail.store_sum}</TableCell>
-              <TableCell>{detail.recorded_at}</TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
+      {/*
       <div className={classes.seeMore}>
         <Link color="primary" href="#" onClick={preventDefault}>
           See more orders
         </Link>
       </div>
+      */}
     </React.Fragment>
   );
 }

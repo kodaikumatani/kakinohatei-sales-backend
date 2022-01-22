@@ -10,26 +10,33 @@ const useStyles = makeStyles({
   },
 });
 
-export default function Monthly() {
+export default function Daily() {
   const classes = useStyles();
   const numberWithComma = new Intl.NumberFormat();
-  const [monthly, setMonthly] = useState([]);
+  const [summary, setSummary] = useState([]);
   useEffect(() => {
-    getMonthly()
+    getSummary()
   },[])
-  const getMonthly = async () => {
+  const getSummary = async () => {
     const response = await axios.get('/api/sales');
-    setMonthly(response.data.monthly)
+    setSummary(response.data.summary)
   }
   
   return (
     <React.Fragment>
-      <Title>Monthly Sales</Title>
+      <Title>Daily</Title>
       <Typography component="p" variant="h4">
-        ¥{numberWithComma.format(monthly.sales)}
+        ¥{numberWithComma.format(summary.daily)}
       </Typography>
       <Typography color="textSecondary" className={classes.depositContext}>
-        {monthly.received}
+        {summary.received}
+      </Typography>
+      <Title>Monthly</Title>
+      <Typography component="p" variant="h4">
+        ¥{numberWithComma.format(summary.monthly)}
+      </Typography>
+      <Typography color="textSecondary" className={classes.depositContext}>
+        {summary.received}
       </Typography>
     </React.Fragment>
   );
