@@ -11,6 +11,8 @@
 |
 */
 
+Route::get('/api/sales', 'SalesController@index');
+
 Route::get('/{any}', function(){
     return view('app');
 })->where('any', '.*');
