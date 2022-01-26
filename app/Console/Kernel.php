@@ -24,10 +24,10 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('gmail:send')->hourlyAt(1)->between('9:00', '20:00');
-        $schedule->command('gmail:send')->hourlyAt(15)->between('9:00', '20:00');
-        $schedule->command('gmail:read')->hourlyAt(5)->between('9:00', '20:00');
-        $schedule->command('gmail:read')->hourlyAt(20)->between('9:00', '20:00');
+        $schedule->command('gmail:send')->hourlyAt(1)->between('10:00', '21:00');
+        $schedule->command('gmail:send')->hourlyAt(15)->between('10:00', '21:00');
+        $schedule->command('gmail:read')->hourlyAt(5)->between('10:00', '17:00');
+        $schedule->command('gmail:read')->hourlyAt(20)->between('10:00', '17:00');
     }
 
     /**
