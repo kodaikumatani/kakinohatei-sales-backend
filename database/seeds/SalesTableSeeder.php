@@ -25,7 +25,7 @@ class SalesTableSeeder extends Seeder
                 }
                 $record[] = $product;
             }
-            foreach ([10,11,12,13,14,15,16,17,18,19] as $hour){
+            foreach ([10,11,12,13,14,15,16,17,18,19,20,21] as $hour){
                 for ($i=0; $i<$store; $i++) {
                     for ($j=0; $j<count($prices); $j++) {
                         $record[$i][$j][1] += $faker->numberBetween($min=0, $max=5);
