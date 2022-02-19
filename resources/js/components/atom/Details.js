@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from '@material-ui/core/Link';
-import { makeStyles } from '@material-ui/core/styles';
+import { withStyles, makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -11,13 +11,17 @@ import Title from './Title';
 function preventDefault(event) {
   event.preventDefault();
 }
-
+const StyledTableCell = withStyles((theme) => ({
+  head: {
+    color: theme.palette.common.black,
+  },
+}))(TableCell);
 const useStyles = makeStyles((theme) => ({
   seeMore: {
     marginTop: theme.spacing(3),
   },
-  numeric: {
-    textAlign: 'right',
+  text: {
+    align: "right",
   }
 }));
 
@@ -30,21 +34,21 @@ export default function Details(props) {
       <Table size="small">
         <TableHead>
           <TableRow>
-            <TableCell>Store</TableCell>
-            <TableCell>product</TableCell>
-            <TableCell className={classes.numeric}>price</TableCell>
-            <TableCell className={classes.numeric}>quantity</TableCell>
-            <TableCell className={classes.numeric}>Store Sum</TableCell>
+            <StyledTableCell>Store</StyledTableCell>
+            <StyledTableCell className={classes.text}>product</StyledTableCell>
+            <StyledTableCell className={classes.text}>price</StyledTableCell>
+            <StyledTableCell className={classes.text}>quantity</StyledTableCell>
+            <StyledTableCell className={classes.text}>Store Sum</StyledTableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {props.value.map((detail) => (
             <TableRow key={detail.id}>
-              <TableCell>{detail.store}</TableCell>
-              <TableCell>{detail.product}</TableCell>
-              <TableCell className={classes.numeric}>{detail.price}</TableCell>
-              <TableCell className={classes.numeric}>{detail.quantity}</TableCell>
-              <TableCell className={classes.numeric}>{detail.store_sum}</TableCell>
+              <StyledTableCell>{detail.store}</StyledTableCell>
+              <StyledTableCell className={classes.text}>{detail.product}</StyledTableCell>
+              <StyledTableCell className={classes.text}>{detail.price}</StyledTableCell>
+              <StyledTableCell className={classes.text}>{detail.quantity}</StyledTableCell>
+              <StyledTableCell className={classes.text}>{detail.store_sum}</StyledTableCell>
             </TableRow>
           ))}
         </TableBody>
