@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { isMobile } from "react-device-detect";
 import axios from 'axios';
 import clsx from 'clsx';
@@ -24,6 +24,7 @@ import { mainListItems, secondaryListItems } from '../atom/listItems';
 import Chart from '../atom/Chart';
 import Summary from '../atom/Summary';
 import Details from '../atom/Details';
+import useInterval from '../atom/useInterval';
 
 function Copyright() {
   return (
@@ -134,7 +135,7 @@ export default function Dashbaord() {
   const [summary, setSummary] = useState([]);
   const [chart, setChart] = useState([]);
   const [details, setDetails] = useState([]);
-  useEffect(() => {
+  useInterval(() => {
     const getData = async () => {
       const response = await axios.get('/api/sales');
       setSummary(response.data.summary);
@@ -142,7 +143,7 @@ export default function Dashbaord() {
       setDetails(response.data.details);
     }
     getData();
-  },[])
+  }, 60000);
 
   return (
     <div className={classes.root}>
