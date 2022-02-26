@@ -36,9 +36,8 @@ class ReadMessage extends Command
      *
      * @return mixed
      */
-    public function handle()
+    public function handle(SalesController $controller)
     {
-        $client = new SalesController();
-        $client->saveSalesData();
+        $controller->saveRecord();
     }
 }

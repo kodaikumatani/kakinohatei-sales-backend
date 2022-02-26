@@ -2,7 +2,7 @@
 
 namespace Infrastructure\Database\Controller;
 
-use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Infrastructure\Database\Model\Product;
 
@@ -10,10 +10,11 @@ class ProductsController extends Controller
 {
     public function getId($name)
     {
-        if (DB::table('products')->where('name', $name)->doesntExist()) {
-            // If there are no products in the table, add them.
+        $product = new Product;
+        if ($product->doesntExistRecord($name)) {
+            // If it's an unregistered store, add it.
             Product::create(['name' => $name]);
         }
-        return DB::table('products')->where('name', $name)->value('id');
+        return $product->getID($name);
     }
 }

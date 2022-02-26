@@ -2,7 +2,7 @@
 
 namespace Infrastructure\Database\Controller;
 
-use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Infrastructure\Database\Model\Store;
 
@@ -10,10 +10,11 @@ class StoresController extends Controller
 {
     public function getId($name)
     {
-        if (DB::table('stores')->where('name', $name)->doesntExist()) {
+        $store = new Store;
+        if ($store->doesntExistRecord($name)) {
             // If it's an unregistered store, add it.
             Store::create(['name' => $name]);
         }
-        return DB::table('stores')->where('name', $name)->value('id');
+        return $store->getID($name);
     }
 }
