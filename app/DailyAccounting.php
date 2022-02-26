@@ -20,8 +20,8 @@ class DailyAccounting extends Model
 			->limit(1)
 			->value('received_at');
 	}
-    
-    public function monthlyClosing()
+	
+	public function monthlyClosing()
     {
         $received_at = $this->timeOfLastReceive();
         return $this

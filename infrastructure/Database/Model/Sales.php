@@ -20,4 +20,32 @@ class Sales extends Model
         "quantity",
         "store_sum",
     ];
+    
+    public function doesntExistRecord($message,$storeID,$productID)
+    {
+        return $this
+            ->where([
+                'received_at' => $message['received_at'],
+                'store_id' => $storeID,
+                'recorded_at' => $message['recorded_at'],
+                'product_id' => $productID,
+                'price' => $message['price'],
+                'quantity' => $message['quantity'],
+                'store_sum' => $message['store_sum']
+            ])->doesntExist();
+    }
+    
+    public function dailyClosing()
+    {
+        $timeOfLastReceive = $this
+			->select('received_at')
+			->groupBy('received_at')
+			->orderBy('received_at', 'desc')
+			->limit(1)
+			->value('received_at');
+		
+		return $this
+		    ->where('received_at', $timeOfLastReceive)
+		    ->get();
+    }
 }
