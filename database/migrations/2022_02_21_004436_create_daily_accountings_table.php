@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateAccountingsTable extends Migration
+class DailyAccountingsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,14 @@ class CreateAccountingsTable extends Migration
      */
     public function up()
     {
-        Schema::create('accountings', function (Blueprint $table) {
+        Schema::create('daily_accountings', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->dateTime('received_at');
-            $table->unsignedMediumInteger('sales');
+            $table->unsignedSmallInteger('store_id');
+            $table->unsignedSmallInteger('product_id');
+            $table->unsignedSmallInteger('price');
+            $table->unsignedSmallInteger('quantity');
+            $table->unsignedSmallInteger('store_sum');
             $table->timestamps();
             $table->softDeletes();
         });
@@ -29,6 +33,6 @@ class CreateAccountingsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('accountings');
+        Schema::dropIfExists('daily_accountings');
     }
 }

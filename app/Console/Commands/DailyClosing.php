@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use Infrastructure\Database\Controller\AccountingsController;
+use Infrastructure\Database\Controller\DailyAccountingsController;
 
 class DailyClosing extends Command
 {
@@ -36,7 +36,7 @@ class DailyClosing extends Command
      *
      * @return mixed
      */
-    public function handle(AccountingsController $controller)
+    public function handle(DailyAccountingsController $controller)
     {
         $controller->dailyClosing();
     }

@@ -4,7 +4,7 @@ namespace Infrastructure\Database\Model;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Accounting extends Model
+class DailyAccounting extends Model
 {
     /**
      * Attributes for multiple assignments
@@ -12,7 +12,11 @@ class Accounting extends Model
      * @var array
      */
     protected $fillable = [
-        'received_at',
-        'sales'
+        "received_at",
+        "store_id",
+        "product_id",
+        "price",
+        "quantity",
+        "store_sum",
     ];
 }
