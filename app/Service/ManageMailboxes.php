@@ -54,8 +54,6 @@ class ManageMailboxes extends GoogleClient
         } else {
             // Get proctor_id and proctor name
             $split_header = preg_split("/\r\n/",$split_message[0]);
-            $provider_id = str_replace('生産者コード:','',$split_header[0]);
-            $provider = str_replace(" 様\r",'',$split_header[1]);
             // Divide sales-info by store.
             $sales_store = preg_split("/\n-+\r\n/", $split_message[2]);
     
@@ -82,8 +80,6 @@ class ManageMailboxes extends GoogleClient
                     
                     $data[] = [
                         'received_at' => $received_at,
-                        'provider_id' => $provider_id,
-                        'provider' => $provider,
                         'store' => $store,
                         'recorded_at' => $recorded_at,
                         'product' => $product,
@@ -106,5 +102,5 @@ class ManageMailboxes extends GoogleClient
         $text = str_replace('時', ':',$text);
         $text = str_replace('分', ':00',$text);
         return $text;
-    }  
+    }
 }
