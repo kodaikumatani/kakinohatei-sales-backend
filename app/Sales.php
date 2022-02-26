@@ -2,11 +2,16 @@
 
 namespace App;
 
-use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
+use App\DailyAccounting;
 
 class Sales extends Model
 {
+	/**
+     * Attributes for multiple assignments
+     *
+     * @var array
+     */
 	public function timeOfLastReceive()
 	{
 		return $this
@@ -14,26 +19,18 @@ class Sales extends Model
 			->groupBy('received_at')
 			->orderBy('received_at', 'desc')
 			->limit(1)
-			->get()[0]
-			->received_at;
+			->value('received_at');
 	}
-	
-	public function daily()
-	{
-		return $this
-			->selectRaw('sum(price * quantity) as summary')
-			->where('received_at', $this->timeOfLastReceive())
-			->get()[0]
-			->summary;
-	}
-	
+
 	public function summary()
 	{
+		$monthly = new DailyAccounting();
 		$received_at =  $this->timeOfLastReceive();
-		$monthly = DB::table('accountings')
-			->where('received_at', 'like', substr($received_at,0,7)."%")
-			->sum('sales');
-		return array('received'=>$received_at, 'daily'=>$this->daily(), 'monthly'=>$monthly);
+		$daily = $this
+			->selectRaw('sum(price * quantity) as amount')
+			->where('received_at', $this->timeOfLastReceive())
+			->value('amount');
+		return array('received'=>$received_at, 'daily'=>$daily, 'monthly'=>$monthly->monthlyClosing());
 	}
 	
 	public function chart()
@@ -46,14 +43,12 @@ class Sales extends Model
 			$lastTimeInHour = $this
 				->selectRaw('max(received_at) as lastdate')
 				->where('received_at', 'like', $query)
-				->get()[0]
-				->lastdate;
+				->value('lastdate');
 
 			$salesHour = $this
 				->selectRaw('sum(price * quantity) as amount')
 				->where('received_at', $lastTimeInHour)
-				->get()[0]
-				->amount;
+				->value('amount');
 				
 			$data[] = array('time' => $hour, 'amount' => (int)$salesHour);
 		}
@@ -68,9 +63,9 @@ class Sales extends Model
 				'recorded_at',
 				'stores.name as store',
 				'products.name as product',
-				'price','quantity',
-				'store_sum'
-			)
+				'price',
+				'quantity',
+				'store_sum')
 			->join('stores','stores.id','=','sales.store_id')
 			->join('products','products.id','=','sales.product_id')
 			->where('received_at', $this->timeOfLastReceive())

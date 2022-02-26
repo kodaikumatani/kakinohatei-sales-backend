@@ -12,6 +12,7 @@
 */
 
 Route::get('/api/sales', 'SalesController@index');
+Route::get('/api/report', 'DailyAccountingsController@index');
 
 Route::get('/{any}', function(){
     return view('app');
