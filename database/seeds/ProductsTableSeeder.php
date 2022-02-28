@@ -12,7 +12,7 @@ class ProductsTableSeeder extends Seeder
      */
     public function run()
     {
-        foreach (['product A', 'product B', 'product C'] as $name) {
+        foreach (['きゃべつ', '玉ネギ', 'トマト'] as $name) {
             Product::create(['name' => $name]);
         }
     }

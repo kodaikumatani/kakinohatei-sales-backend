@@ -15,33 +15,21 @@ class SalesTableSeeder extends Seeder
     {
         $store = 3;
         $prices = [300,400,500];
-        
-        for ($day=1; $day<=31; $day++) {
-            $record = [];
-            for($i=0; $i<$store; $i++) {
-                $product = [];
-                foreach($prices as $price) {
-                    $product[] = array($price,0);
+        $data = [[0,0,0],[0,0,0],[0,0,0]];
+        foreach ([10,11,12,13,14,15,16,17,18,19,20] as $hour){
+            for ($i = 0; $i < $store; $i++) {
+                for ($j = 0; $j < count($prices); $j++) {
+                    $data[$i][$j] += $faker->numberBetween($min=0, $max=5);
+                    Sales::create([
+                        'received_at' => '2022-01-31 '.$hour.':00:00',
+                        'store_id' => $i+1,
+                        'recorded_at' => '2022-01-31 '.$hour.':00:00',
+                        'product_id' =>$j+1,
+                        'price' => $prices[$j],
+                        'quantity' =>$data[$i][$j],
+                        'store_sum' => $data[$i][$j]
+                    ]);
                 }
-                $record[] = $product;
-            }
-            foreach ([10,11,12,13,14,15,16,17,18,19,20,21] as $hour){
-                for ($i=0; $i<$store; $i++) {
-                    for ($j=0; $j<count($prices); $j++) {
-                        $record[$i][$j][1] += $faker->numberBetween($min=0, $max=5);
-                        
-                        Sales::create([
-                            'received_at' => '2022-01-'.$day.' '.$hour.':00:00',
-                            'provider_id' => 682,
-                            'store_id' => $i+1,
-                            'recorded_at' => '2022-01-'.$day.' '.$hour.':00:00',
-                            'product_id' =>$j+1,
-                            'price' => $record[$i][$j][0],
-                            'quantity' =>$record[$i][$j][1],
-                            'store_sum' => $record[$i][$j][1]
-                        ]);
-                    }
-                } 
             }
         }
     }
