@@ -30,7 +30,7 @@ class Sales extends Model
 			->selectRaw('sum(price * quantity) as amount')
 			->where('received_at', $this->timeOfLastReceive())
 			->value('amount');
-		return array('received'=>$received_at, 'daily'=>$daily, 'monthly'=>$monthly->monthlyClosing());
+		return array('received'=>$received_at, 'daily'=>$daily, 'monthly'=>$monthly->monthlyAmount());
 	}
 	
 	public function chart()
@@ -71,6 +71,5 @@ class Sales extends Model
 			->where('received_at', $this->timeOfLastReceive())
 			->orderBy('store_id')
 			->get();
-			
 	}
 }

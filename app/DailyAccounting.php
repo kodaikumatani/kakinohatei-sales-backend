@@ -21,7 +21,7 @@ class DailyAccounting extends Model
 			->value('received_at');
 	}
 	
-	public function monthlyClosing()
+	public function monthlyAmount()
     {
         $received_at = $this->timeOfLastReceive();
         return $this
@@ -33,8 +33,18 @@ class DailyAccounting extends Model
     public function monthlyRecord() {
         $received_at = $this->timeOfLastReceive();
         return $this
-            ->select('received_at','store_id','product_id','price','quantity','store_sum')
-            ->where('received_at', 'like', substr($received_at,0,7).'%')
-            ->get();
+			->select(
+				'daily_accountings.id',
+				'received_at',
+				'stores.name as store',
+				'products.name as product',
+				'price',
+				'quantity',
+				'store_sum')
+			->join('stores','stores.id','=','daily_accountings.store_id')
+			->join('products','products.id','=','daily_accountings.product_id')
+			->where('received_at', 'like', substr($received_at,0,7).'%')
+			->orderBy('id')
+			->get();
     }
 }
