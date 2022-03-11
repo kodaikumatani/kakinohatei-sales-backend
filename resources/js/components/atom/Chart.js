@@ -1,36 +1,34 @@
 import React from 'react';
 import { useTheme } from '@material-ui/core/styles';
-import { LineChart, Line, XAxis, YAxis, Label, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from 'recharts';
 import Title from './Title';
 
 export default function Chart(props) {
   const theme = useTheme();
-
+  
+  const renderCustomBarLabel = ({ payload, x, y, width, height, value }) => {
+    return <text x={x + width / 2} y={y} fill="#666" textAnchor="middle" dy={-6}>{`${value}`}</text>;
+  };
   return (
     <React.Fragment>
       <Title>Sales trends</Title>
-      <ResponsiveContainer>
-        <LineChart
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart
+          width={500}
+          height={300}
           data={props.value}
           margin={{
-            top: 16,
-            right: 16,
-            bottom: 0,
-            left: 24,
+            top: 5,
+            right: 30,
+            left: 20,
+            bottom: 5,
           }}
         >
-          <XAxis dataKey="time" stroke={theme.palette.text.secondary} />
-          <YAxis stroke={theme.palette.text.secondary}>
-            <Label
-              angle={270}
-              position="left"
-              style={{ textAnchor: 'middle', fill: theme.palette.text.primary }}
-            >
-              Sales (¥)
-            </Label>
-          </YAxis>
-          <Line type="monotone" dataKey="amount" stroke={theme.palette.primary.main} dot={false} />
-        </LineChart>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="time" />
+          <YAxis />
+          <Bar dataKey="amount" fill="#1976d2" label={renderCustomBarLabel} />
+        </BarChart>
       </ResponsiveContainer>
     </React.Fragment>
   );

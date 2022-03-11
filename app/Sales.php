@@ -39,18 +39,16 @@ class Sales extends Model
 		$lastReceivedDate = substr($this->timeOfLastReceive(),0,11);
 		for ($hour=10; $hour<=21; $hour++) {
 			$query = $lastReceivedDate.$hour.'%';
-			
 			$lastTimeInHour = $this
 				->selectRaw('max(received_at) as lastdate')
 				->where('received_at', 'like', $query)
 				->value('lastdate');
-
 			$salesHour = $this
 				->selectRaw('sum(price * quantity) as amount')
 				->where('received_at', $lastTimeInHour)
 				->value('amount');
 				
-			$data[] = array('time' => $hour, 'amount' => (int)$salesHour);
+			$data[] = array('time' => $hour.':00', 'amount' => (int)$salesHour);
 		}
 		return $data;
 	}
