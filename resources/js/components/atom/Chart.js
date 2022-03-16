@@ -27,7 +27,7 @@ export default function Chart(props) {
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="time" />
           <YAxis />
-          <Bar dataKey="amount" fill="#1976d2" label={renderCustomBarLabel} />
+          <Bar dataKey="amount" fill={theme.palette.info.main} label={renderCustomBarLabel} />
         </BarChart>
       </ResponsiveContainer>
     </React.Fragment>
