@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { isMobile } from "react-device-detect";
 import axios from 'axios';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
@@ -15,7 +14,6 @@ import IconButton from '@material-ui/core/IconButton';
 import Badge from '@material-ui/core/Badge';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
 import Link from '@material-ui/core/Link';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
@@ -120,16 +118,16 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Dashbaord() {
   const classes = useStyles();
-  const [open, setOpen] = React.useState(function() {
-    return (isMobile ? false : true);
-  });
+  const [open, setOpen] = React.useState(true);
+  const [monthly, setMonthly] = useState([]);
+  
   const handleDrawerOpen = () => {
     setOpen(true);
   };
   const handleDrawerClose = () => {
     setOpen(false);
   };
-  const [monthly, setMonthly] = useState([]);
+  
   useEffect(() => {
     const getData = async () => {
       const response = await axios.get('/api/report');

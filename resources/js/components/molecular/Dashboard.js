@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { isMobile } from "react-device-detect";
 import axios from 'axios';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
@@ -123,19 +122,20 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Dashbaord() {
   const classes = useStyles();
-  const [open, setOpen] = React.useState(function() {
-    return (isMobile ? false : true);
-  });
+  const [open, setOpen] = React.useState(true);
+  const [summary, setSummary] = useState([]);
+  const [chart, setChart] = useState([]);
+  const [details, setDetails] = useState([]);
+  
   const handleDrawerOpen = () => {
     setOpen(true);
   };
   const handleDrawerClose = () => {
     setOpen(false);
   };
+  
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
-  const [summary, setSummary] = useState([]);
-  const [chart, setChart] = useState([]);
-  const [details, setDetails] = useState([]);
+  
   useInterval(() => {
     const getData = async () => {
       const response = await axios.get('/api/sales');
