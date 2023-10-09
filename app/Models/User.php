@@ -18,6 +18,7 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
+        'producer_code',
         'name',
         'email',
         'password',
@@ -42,4 +43,17 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @param $code
+     * @return int
+     */
+    public static function getUserId($code): int
+    {
+        return self::query()
+            ->where('producer_code', $code)
+            ->value('id');
+    }
 }

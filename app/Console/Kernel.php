@@ -9,10 +9,13 @@ class Kernel extends ConsoleKernel
 {
     /**
      * Define the application's command schedule.
+     *
+     * @param Schedule $schedule
      */
     protected function schedule(Schedule $schedule): void
     {
-        // $schedule->command('inspire')->hourly();
+        $schedule->command('gmail:send')->hourlyAt(16)->between('10:00', '20:00');
+        $schedule->command('gmail:read')->hourlyAt(20)->between('10:00', '20:00');
     }
 
     /**
