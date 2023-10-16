@@ -5,17 +5,15 @@ namespace App\Http\Controllers;
 use App\Models\Log;
 use App\Service\ManageMailboxes;
 use Google\Exception;
-use Illuminate\Http\Request;
 
 class LogController extends Controller
 {
     /**
-     * @return void
      * @throws Exception
      */
     public static function registerSalesLog(): void
     {
-        foreach(ManageMailboxes::getMessage() as $message) {
+        foreach (ManageMailboxes::getMessage() as $message) {
             Log::query()->updateOrCreate(
                 [
                     'dateTime' => $message['date'],
@@ -26,7 +24,7 @@ class LogController extends Controller
                     'price' => $message['price'],
                 ],
                 [
-                    'quantity'=> $message['quantity'],
+                    'quantity' => $message['quantity'],
                     'store_total' => $message['store_total'],
                 ]
             );

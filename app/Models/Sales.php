@@ -27,7 +27,6 @@ class Sales extends Model
     /**
      * The attributes that are mass assignable.
      *
-     * @param $date
      * @return Collection
      */
     public static function fetchDateStores($date)
@@ -62,8 +61,6 @@ class Sales extends Model
     /**
      * The attributes that are mass assignable.
      *
-     * @param $date
-     * @param $id
      * @return Collection
      */
     public static function fetchDailyDateSales($date, $id)
@@ -74,9 +71,9 @@ class Sales extends Model
             ->selectRaw('SUM(store_total) as store_total')
             ->selectRaw('SUM(products.price * quantity) as total')
             ->where('date', $date)
-            ->whereRaw("CASE WHEN ? = 0 THEN TRUE ELSE store_id = ? END", [$id, $id])
+            ->whereRaw('CASE WHEN ? = 0 THEN TRUE ELSE store_id = ? END', [$id, $id])
             ->join('products', 'products.id', '=', 'sales.product_id')
-            ->groupBy('product','price')
+            ->groupBy('product', 'price')
             ->withCasts([
                 'quantity' => 'integer',
                 'total' => 'integer',
@@ -86,7 +83,6 @@ class Sales extends Model
     /**
      * The attributes that are mass assignable.
      *
-     * @param $date
      * @return Collection
      */
     public static function fetchDailyDateStoresSales($date)
@@ -106,7 +102,6 @@ class Sales extends Model
     /**
      * The attributes that are mass assignable.
      *
-     * @param $date
      * @return Collection
      */
     public static function fetchDailyDateProductsSales($date)
@@ -125,7 +120,6 @@ class Sales extends Model
     /**
      * The attributes that are mass assignable.
      *
-     * @param $date
      * @return Collection
      */
     public static function fetchDateHourlySales($date)

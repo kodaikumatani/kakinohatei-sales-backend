@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Collection;
 
 class Product extends Model
 {
@@ -21,17 +20,11 @@ class Product extends Model
         'price',
     ];
 
-    /**
-     * @param $id
-     * @param $name
-     * @param $price
-     * @return int
-     */
     public static function getProductId($id, $name, $price): int
     {
         return self::query()
             ->firstOrCreate(
-                ['user_id'=> $id, 'name' => $name, 'price' => $price],
+                ['user_id' => $id, 'name' => $name, 'price' => $price],
             )['id'];
     }
 }

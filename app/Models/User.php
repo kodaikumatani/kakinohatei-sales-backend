@@ -46,9 +46,6 @@ class User extends Authenticatable
 
     /**
      * The attributes that are mass assignable.
-     *
-     * @param $code
-     * @return int
      */
     public static function getUserId($code): int
     {

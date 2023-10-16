@@ -3,13 +3,13 @@
 namespace App\Service;
 
 use Google\Client;
-use Google\Service\Gmail;
 use Google_Service_Gmail;
 
 class GoogleClient
 {
     /**
      * Returns an authorized API client.
+     *
      * @return Client the authorized client object
      */
     public static function getClient()
@@ -19,7 +19,7 @@ class GoogleClient
         $client->setScopes([
             Google_Service_Gmail::GMAIL_READONLY,
             Google_Service_Gmail::GMAIL_SEND,
-            Google_Service_Gmail::GMAIL_MODIFY
+            Google_Service_Gmail::GMAIL_MODIFY,
         ]);
         $client->setAuthConfig('creds/credentials.json');
         $client->setAccessType('offline');
@@ -44,7 +44,7 @@ class GoogleClient
                 // Request authorization from the user.
                 $authUrl = $client->createAuthUrl();
                 printf("Open the following link in your browser:\n%s\n", $authUrl);
-                print 'Enter verification code: ';
+                echo 'Enter verification code: ';
                 $authCode = trim(fgets(STDIN));
 
                 // Exchange authorization code for an access token.
@@ -53,15 +53,16 @@ class GoogleClient
 
                 // Check to see if there was an error.
                 if (array_key_exists('error', $accessToken)) {
-                    throw new Exception(join(', ', $accessToken));
+                    throw new Exception(implode(', ', $accessToken));
                 }
             }
             // Save the token to a file.
-            if (!file_exists(dirname($tokenPath))) {
+            if (! file_exists(dirname($tokenPath))) {
                 mkdir(dirname($tokenPath), 0700, true);
             }
             file_put_contents($tokenPath, json_encode($client->getAccessToken()));
         }
+
         return $client;
     }
 }

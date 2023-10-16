@@ -10,10 +10,6 @@ class GetSalesDailyDateController extends Controller
 {
     /**
      * Handle the incoming request.
-     *
-     * @param GetSalesDailyDateRequest $request
-     * @param String $date
-     * @return JsonResponse
      */
     public function __invoke(GetSalesDailyDateRequest $request, string $date): JsonResponse
     {
