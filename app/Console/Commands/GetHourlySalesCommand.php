@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Http\Controllers\LogController;
+use App\Http\Controllers\ImapMailController;
 use App\Http\Controllers\SalesController;
 use Google\Exception;
 use Illuminate\Console\Command;
@@ -30,7 +30,7 @@ class GetHourlySalesCommand extends Command
      */
     public function handle(): void
     {
-        LogController::registerSalesLog();
+        ImapMailController::readToday();
         SalesController::normalizeSalesLog();
     }
 }

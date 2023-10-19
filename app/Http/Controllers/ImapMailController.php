@@ -2,18 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\HourlySalesMail;
 use App\Models\Log;
 use App\Service\ManageMailboxes;
-use Google\Exception;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Mail;
 
-class LogController extends Controller
+class ImapMailController extends Controller
 {
-    /**
-     * @throws Exception
-     */
-    public static function registerSalesLog(): void
+    public static function readToday()
     {
-        foreach (ManageMailboxes::getMessage() as $message) {
+        $date = Carbon::today();
+        $messages = ManageMailboxes::getMessageByDate($date);
+        foreach ($messages as $message) {
             Log::query()->updateOrCreate(
                 [
                     'dateTime' => $message['date'],
@@ -29,5 +30,10 @@ class LogController extends Controller
                 ]
             );
         }
+    }
+
+    public static function send()
+    {
+        Mail::send(new HourlySalesMail);
     }
 }
