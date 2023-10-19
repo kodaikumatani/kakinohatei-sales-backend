@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Service\SalesRequest;
+use App\Http\Controllers\ImapMailController;
 use Google\Exception;
 use Illuminate\Console\Command;
 
@@ -29,6 +29,6 @@ class SalesRequestCommand extends Command
      */
     public function handle(): void
     {
-        SalesRequest::sendMessage();
+        ImapMailController::send();
     }
 }
