@@ -92,8 +92,13 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | JA-Tottori-Inaba "From" Address
+    | Global "From" Address
     |--------------------------------------------------------------------------
+    |
+    | You may wish for all e-mails sent by your application to be sent from
+    | the same address. Here, you may specify a name and address that is
+    | used globally for all e-mails that are sent by your application.
+    |
     */
 
     'from' => [
@@ -103,15 +108,20 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | JA-Tottori-Inaba "To" Address
+    | JA-Tottori-Inaba Address
     |--------------------------------------------------------------------------
     */
 
-    'to' => [
-        'address' => env('MAIL_TO_ADDRESS', 'hello@example.com'),
-        'name' => env('MAIL_TO_NAME', 'Example'),
+    'ja_inaba' => [
+        'from' => [
+            'address' => env('MAIL_JAINABA_FROM_ADDRESS', 'hello@example.com'),
+            'name' => env('MAIL_JAINABA_FROM_NAME', 'Example'),
+        ],
+        'to' => [
+            'address' => env('MAIL_JAINABA_TO_ADDRESS', 'hello@example.com'),
+            'name' => env('MAIL_JAINABA_TO_NAME', 'Example'),
+        ],
     ],
-
 
     /*
     |--------------------------------------------------------------------------

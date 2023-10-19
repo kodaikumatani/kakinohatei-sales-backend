@@ -2,46 +2,54 @@
 
 namespace App\Service;
 
-use Google\Exception;
-use Google_Service_Gmail;
-use Google_Service_Gmail_ModifyMessageRequest;
+use Carbon\Carbon;
+use Webklex\IMAP\Facades\Client;
 
 class ManageMailboxes
 {
-    /**
-     * Returns the retrieved mail content.
-     *
-     * @throws Exception
-     */
-    public static function getMessage(): array
+    public static function getMessageByYear(Carbon $date)
     {
-        // Get the API client and construct the service object.
-        $client = GoogleClient::getClient();
-        $service = new Google_Service_Gmail($client);
-        $mods = new Google_Service_Gmail_ModifyMessageRequest();
+        $client = Client::account('default');
+        $client->connect();
 
-        $user = 'me';
-        $optParams = [
-            'maxResults' => '10',
-            'labelIds' => 'UNREAD',
-            'q' => 'subject:JA鳥取いなば直売所売上速報　from:'.config('mail.from.address'),
-        ];
-        // Get a list of emails that match the conditions.
-        $data = [];
-        $messages = $service->users_messages->listUsersMessages($user, $optParams);
-        foreach ((array) $messages->getMessages() as $message) {
-            $message_id = $message->getID();
-            $message_contents = $service->users_messages->get($user, $message_id);
-            $internal_date = substr($message_contents->getInternalDate(), 0, -3);
-            $encode_bytes = $message_contents->getPayload()->getBody()->getData();
-            $trance_encode_bytes = str_replace(['-', '_'], ['+', '/'], $encode_bytes);
-            $decoded_bytes = base64_decode($trance_encode_bytes);
-            $data = array_merge($data, MailAnalysis::regex($internal_date, $decoded_bytes));
-            // Remove the unread label.
-            $mods->setRemoveLabelIds(['UNREAD']);
-            $service->users_messages->modify('me', $message_id, $mods);
+        $folder = $client->getFolderByName('INBOX');
+
+        $messages = $folder->messages()
+            ->from(config('mail.ja_inaba.from.address'))
+            ->whereBefore($date->endOfYear())
+            ->WhereSince($date->startOfYear())
+            ->setFetchOrder('asc')
+            ->get();
+
+        $record = [];
+        foreach ($messages as $message) {
+            $record = array_merge($record, MailAnalysis::regex($date, $message->getTextBody()));
+            $message->setFlag('SEEN');
         }
 
-        return array_filter($data);
+        return $record;
+    }
+
+    public static function getMessageByDate($date)
+    {
+        $client = Client::account('default');
+        $client->connect();
+
+        $folder = $client->getFolderByName('INBOX');
+
+        $messages = $folder->messages()
+            ->from(config('mail.ja_inaba.from.address'))
+            ->whereOn($date)
+            ->setFetchOrder('asc')
+            ->limit(10)
+            ->get();
+
+        $record = [];
+        foreach ($messages as $message) {
+            $record = array_merge($record, MailAnalysis::regex($date, $message->getTextBody()));
+            $message->setFlag('SEEN');
+        }
+
+        return $record;
     }
 }

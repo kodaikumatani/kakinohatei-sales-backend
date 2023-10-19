@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use Carbon\Carbon;
 use Exception;
 
 class MailAnalysis
@@ -13,71 +14,78 @@ class MailAnalysis
      * @param $message
      * @return array|null[]
      */
-    public static function regex($internal_date, $message): array
+    public static function regex(Carbon $internal_date, string $text)
     {
-        try {
-            $record = [];
-            $pattern = "/=+|構成比\r\n|\r\n【合計数量/";
-            $split_message = preg_split($pattern, $message);
-
-            if (str_contains($split_message[1], '売上データはありません。')) {
-                return [null];
-            }
-            // Get proctor_id and proctor name
-            $split_header = preg_split("/\r\n/", $split_message[0]);
-            $producer_code = str_replace('生産者コード:', '', $split_header[0]);
-            $producer_name = str_replace(' 様', '', $split_header[1]);
-            // Divide sales-info by store.
-            $stores = preg_split("/-+\r\n/", $split_message[2]);
-
-            foreach (array_filter($stores) as $store) {
-                preg_match("{\((.*)\)}", $store, $match);
-                $date = self::formatDate($internal_date, $match[1]);
-                $store_name = preg_split('/\s:\s/', $store)[0];
-                $products = preg_split("/\n/", preg_split("/現在\)\r\n/", $store)[1]);
-
-                foreach (array_filter($products) as $product) {
-                    $items = preg_split("/\s+/", $product);
-                    $product_name = str_replace('（鳥取県産）', '', $items[1]);
-                    $price = str_replace([',', '円'], '', $items[2]);
-                    $quantity = str_replace('個', '', $items[3]);
-                    try {
-                        $store_total = str_replace('個)', '', $items[5]);
-                    } catch (Exception $e) {
-                        $store_total = null;
-                    }
-
-                    if ($product_name == '餅') {
-                        $product_name = 'もち';
-                    }
-
-                    $record[] = [
-                        'date' => $date,
-                        'producer_code' => $producer_code,
-                        'producer' => $producer_name,
-                        'store' => $store_name,
-                        'product' => $product_name,
-                        'price' => $price,
-                        'quantity' => $quantity,
-                        'store_total' => $store_total,
-                    ];
-                }
-            }
-
-            return $record;
-        } catch (Exception $e) {
-            echo $e->getMessage(), "\n";
-
-            return [null];
+        // 売上があるか判定
+        if (strpos($text, '売上データはありません')) {
+            return [];
         }
+
+        // 生産者コード
+        if (preg_match('/生産者コード:(\d+)/', $text, $matches)) {
+            $producer_code = (int) $matches[1];
+        }
+
+        // 生産者名
+        if (preg_match('/生産者コード:\d+\r\n(.*?)\s+様/', $text, $matches)) {
+            $producer_name = $matches[1];
+        }
+
+        // 売上を店舗ごとに分割
+        $sales = preg_split('/=+|構成比\r\n|\r\n【合計数量/', $text)[2];
+        $stores = preg_split('/-+\r\n/', $sales);
+
+        $record = [];
+        foreach ($stores as $store) {
+            // 店名
+            if (preg_match('/^(.*?):/', $store, $matches)) {
+                $store_name = $matches[1];
+            }
+
+            // 日付
+            if (preg_match('/\((.*?)現在\)/', $store, $matches)) {
+                $date = self::formatDate($internal_date, $matches[1]);
+            }
+
+            // 売上を商品ごとに分割
+            $products = array_slice(preg_split('/\r\n/', $store), 1);
+            foreach (array_filter($products) as $product) {
+                $items = preg_split("/\s+/", $product);
+                $product_name = str_replace('（鳥取県産）', '', $items[1]);
+                $price = str_replace([',', '円'], '', $items[2]);
+                $quantity = str_replace([',', '個'], '', $items[3]);
+                try {
+                    $store_total = str_replace('個)', '', $items[5]);
+                } catch (Exception $e) {
+                    $store_total = null;
+                }
+
+                if ($product_name == '餅') {
+                    $product_name = 'もち';
+                }
+
+                $record[] = [
+                    'date' => $date,
+                    'producer_code' => $producer_code,
+                    'producer' => $producer_name,
+                    'store' => $store_name,
+                    'product' => $product_name,
+                    'price' => $price,
+                    'quantity' => $quantity,
+                    'store_total' => $store_total,
+                ];
+            }
+        }
+
+        return $record;
     }
 
     /**
      * Formatting Japanese display to Y-m-d H:i.
      */
-    private static function formatDate($internal_date, $text): string
+    private static function formatDate(Carbon $internal_date, $text): string
     {
-        $year = date('Y', $internal_date);
+        $year = $internal_date->year;
         preg_match_all('/\d+/', $text, $match);
         $time = mktime($match[0][2], $match[0][3], 0, $match[0][0], $match[0][1], $year);
 
