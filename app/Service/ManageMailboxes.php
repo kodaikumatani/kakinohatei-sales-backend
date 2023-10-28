@@ -23,11 +23,10 @@ class ManageMailboxes
 
         $record = [];
         foreach ($messages as $message) {
-            $record = array_merge($record, MailAnalysis::regex($date, $message->getTextBody()));
-            $message->setFlag('SEEN');
+            $record[] = MailAnalysis::regex($date, $message->getTextBody());
         }
 
-        return $record;
+        return array_reduce($record, 'array_merge', []);
     }
 
     public static function getMessageByDate($date)
@@ -46,10 +45,10 @@ class ManageMailboxes
 
         $record = [];
         foreach ($messages as $message) {
-            $record = array_merge($record, MailAnalysis::regex($date, $message->getTextBody()));
+            $record[] = MailAnalysis::regex($date, $message->getTextBody());
             $message->setFlag('SEEN');
         }
 
-        return $record;
+        return array_reduce($record, 'array_merge', []);
     }
 }

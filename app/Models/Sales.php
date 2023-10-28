@@ -67,6 +67,7 @@ class Sales extends Model
                     ->on('sales.store_id', '=', 'sub.store_id');
             })
             ->groupBy('product_id')
+            ->orderBy('product_id')
             ->get();
     }
 
@@ -98,6 +99,7 @@ class Sales extends Model
                     ->on('sales.store_id', '=', 'sub.store_id')
                     ->on('sales.product_id', '=', 'sub.product_id');
             })
+            ->orderBy('products.id')
             ->get();
     }
 
@@ -109,6 +111,7 @@ class Sales extends Model
     public static function findStoreByDate(Carbon $date)
     {
         $subQuery = self::query()
+            ->select('store_id')
             ->selectRaw('MAX(date) as max_date')
             ->whereDate('date', $date)
             ->groupBy('store_id');
@@ -120,12 +123,13 @@ class Sales extends Model
             ->join('products', 'products.id', '=', 'sales.product_id')
             ->joinSub($subQuery, 'sub', function ($join) {
                 $join
+                    ->on('sales.store_id', '=', 'sub.store_id')
                     ->on('sales.date', '=', 'sub.max_date');
             })
             ->withCasts([
                 'value' => 'integer',
             ])
-            ->groupBy('store_id')
+            ->groupByRaw('sales.store_id')
             ->get();
     }
 
@@ -166,64 +170,34 @@ class Sales extends Model
     public static function findHourlyByDate(Carbon $date)
     {
         $subQueryA = self::query()
-            ->select('hour')
+            ->select('hour', 'store_id', 'product_id')
             ->selectRaw('SUM(products.price * quantity) as value')
-            ->selectRaw('ROW_NUMBER() OVER(ORDER BY hour ASC) AS num')
-            ->whereDate('date', $date)
+            ->selectRaw('ROW_NUMBER() OVER(PARTITION BY store_id, product_id ORDER BY hour ASC) as num')
             ->join('products', 'products.id', '=', 'sales.product_id')
-            ->groupBy('hour');
+            ->whereDate('date', $date)
+            ->groupBy('hour', 'store_id', 'product_id');
 
         $subQueryB = self::query()
-            ->select('hour')
+            ->select('hour', 'store_id', 'product_id')
             ->selectRaw('SUM(products.price * quantity) as value')
-            ->selectRaw('ROW_NUMBER() OVER(ORDER BY hour ASC) + 1 AS num')
-            ->whereDate('date', $date)
+            ->selectRaw('ROW_NUMBER() OVER(PARTITION BY store_id, product_id ORDER BY hour ASC) + 1 as num')
             ->join('products', 'products.id', '=', 'sales.product_id')
-            ->groupBy('hour');
+            ->whereDate('date', $date)
+            ->groupBy('hour', 'store_id', 'product_id');
 
         return self::query()
-            ->selectRaw('A.hour, A.value - IFNULL(B.value,0) as value')
+            ->selectRaw('A.hour, SUM(A.value - IFNULL(B.value, 0)) as value')
             ->fromSub($subQueryA, 'A')
             ->leftJoinSub($subQueryB, 'B', function ($join) {
-                $join->on('A.num', '=', 'B.num');
+                $join->on('A.num', '=', 'B.num')
+                    ->on('A.store_id', '=', 'B.store_id')
+                    ->on('A.product_id', '=', 'B.product_id');
             })
             ->withCasts([
                 'value' => 'integer',
             ])
-            ->get();
-    }
-
-    /**
-     * TODO: getHourlySalesByDateを商品ごとに変更する
-     *
-     * @param Carbon
-     */
-    public static function findHourlyByDateProt(Carbon $date)
-    {
-        $subQueryA = self::query()
-            ->select('hour', 'product_id', 'products.name')
-            ->selectRaw('SUM(quantity) as quantity')
-            ->selectRaw('ROW_NUMBER() OVER(PARTITION BY product_id ORDER BY hour ASC) AS num')
-            ->whereDate('date', $date)
-            ->join('products', 'products.id', '=', 'sales.product_id')
-            ->groupBy('hour', 'product_id');
-
-        $subQueryB = self::query()
-            ->select('hour', 'product_id', 'products.name')
-            ->selectRaw('SUM(quantity) as quantity')
-            ->selectRaw('ROW_NUMBER() OVER(PARTITION BY product_id ORDER BY hour ASC) + 1 AS num')
-            ->whereDate('date', $date)
-            ->join('products', 'products.id', '=', 'sales.product_id')
-            ->groupBy('hour', 'product_id');
-
-        return self::query()
-            ->selectRaw('A.hour, A.name, A.quantity - IFNULL(B.quantity,0) as sub')
-            ->fromSub($subQueryA, 'A')
-            ->leftJoinSub($subQueryB, 'B', function ($join) {
-                $join
-                    ->on('A.num', '=', 'B.num')
-                    ->on('A.product_id', '=', 'B.product_id');
-            })
+            ->groupBy('hour')
+            ->orderBy('hour')
             ->get();
     }
 }
