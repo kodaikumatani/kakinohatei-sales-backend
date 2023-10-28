@@ -24,6 +24,8 @@ class MailAnalysis
         // 生産者コード
         if (preg_match('/生産者コード:(\d+)/', $text, $matches)) {
             $producer_code = (int) $matches[1];
+        } else {
+            return [];
         }
 
         // 生産者名
@@ -38,7 +40,7 @@ class MailAnalysis
         $record = [];
         foreach ($stores as $store) {
             // 店名
-            if (preg_match('/^(.*?):/', $store, $matches)) {
+            if (preg_match('/^(.*?)\s:/', $store, $matches)) {
                 $store_name = $matches[1];
             }
 
