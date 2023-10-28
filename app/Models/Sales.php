@@ -108,7 +108,7 @@ class Sales extends Model
      *
      * @param Carbon
      */
-     public static function findStoreByDate(Carbon $date)
+    public static function findStoreByDate(Carbon $date)
     {
         $subQuery = self::query()
             ->select('store_id')
@@ -123,8 +123,8 @@ class Sales extends Model
             ->join('products', 'products.id', '=', 'sales.product_id')
             ->joinSub($subQuery, 'sub', function ($join) {
                 $join
-                ->on('sales.store_id', '=', 'sub.store_id')
-                ->on('sales.date', '=', 'sub.max_date');
+                    ->on('sales.store_id', '=', 'sub.store_id')
+                    ->on('sales.date', '=', 'sub.max_date');
             })
             ->withCasts([
                 'value' => 'integer',

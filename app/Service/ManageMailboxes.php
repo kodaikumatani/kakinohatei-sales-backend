@@ -26,7 +26,7 @@ class ManageMailboxes
             $record[] = MailAnalysis::regex($date, $message->getTextBody());
         }
 
-        return array_reduce($record, 'array_merge', array());
+        return array_reduce($record, 'array_merge', []);
     }
 
     public static function getMessageByDate($date)
@@ -49,6 +49,6 @@ class ManageMailboxes
             $message->setFlag('SEEN');
         }
 
-        return array_reduce($record, 'array_merge', array());
+        return array_reduce($record, 'array_merge', []);
     }
 }
