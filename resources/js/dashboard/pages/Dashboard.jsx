@@ -12,8 +12,8 @@ import {
 import Stores from '../components/Stores';
 import Products from '../components/Products';
 import SalesStatus from '../components/SalesStatus';
-import HourlySales from '../components/HourlySales';
 import CalendarAppBar from '../components/CalendarAppBar';
+import HourlySales from '../components/HourlySales';
 
 const mdTheme = createTheme();
 
