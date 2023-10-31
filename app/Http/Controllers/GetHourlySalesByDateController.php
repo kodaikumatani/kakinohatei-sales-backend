@@ -13,16 +13,14 @@ class GetHourlySalesByDateController extends Controller
      */
     public function __invoke(string $date)
     {
-        $hours = Sales::findHourlyByDate(Carbon::parse($date));
-
-        $product = $hours->pluck('product')->unique();
+        $hours = Sales::findHourlyByDate(Carbon::parse($date))->groupBy('product');
 
         return response()->json(
-            $product->map(function ($item) use ($hours) {
+            $hours->keys()->map(function ($item) use ($hours) {
                 return [
                     'store' => $item,
                     'details' => HourlySalesResource::collection(
-                        $hours->where('product', $item)
+                        $hours[$item],
                     ),
                 ];
             }),
