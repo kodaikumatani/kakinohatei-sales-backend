@@ -1,47 +1,83 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import PropTypes from 'prop-types';
+import Tabs from '@mui/material/Tabs';
 import { Paper } from '@mui/material';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from 'recharts';
+import Tab from '@mui/material/Tab';
+import Box from '@mui/material/Box';
+import SalesBar from './SalesBar';
 import Title from './Title';
 
-const HourlySales = (props) => {
-    const { date } = props;
-    const [hours, setHours] = useState([{ hour: 19, value: 0}]);
+function CustomTabPanel(props) {
+  const { children, value, index, ...other } = props;
 
-    useEffect(() => {
-        axios.get(`/api/sales/${date}/hourly`)
-            .then(response => setHours(response.data.summary))
-            .catch(error => console.log(error))
-    }, [date])
-
-    return (
-        <Paper
-            sx={{
-                p: 2,
-                display: 'flex',
-                flexDirection: 'column',
-            }}
-        >
-            <Title>Hourly Sales</Title>
-            <ResponsiveContainer aspect="2">
-                <BarChart
-                    data={hours}
-                    margin={{ top: 30, right: 0, bottom: 0, left: 0 }}
-                    barCategoryGap={"20%"}
-                >
-                    <CartesianGrid horizontal={true} vertical={false} />
-                    <Bar dataKey="value" fill="#1492C9" />
-                    <XAxis
-                        dataKey="hour"
-                        type="number"
-                        interval={0}
-                        domain={['dataMin - 1', 'dataMax + 1']}
-                        ticks={[10, 11, 12, 13, 14, 15, 16, 17, 18, 19]}
-                    />
-                    <YAxis />
-                </BarChart>
-            </ResponsiveContainer>
-        </Paper>
-    );
+  return (
+    <div
+      role='tabpanel'
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}
+    >
+      {value === index && <Box>{children}</Box>}
+    </div>
+  );
 }
-export default HourlySales;
+
+CustomTabPanel.propTypes = {
+  children: PropTypes.node,
+  index: PropTypes.number.isRequired,
+  value: PropTypes.number.isRequired,
+};
+
+function a11yProps(index) {
+  return {
+    id: `simple-tab-${index}`,
+    'aria-controls': `simple-tabpanel-${index}`,
+  };
+}
+
+const BasicTab = props => {
+  const { date } = props;
+  const [hours, setHours] = useState([]);
+  const [value, setValue] = useState(0);
+
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
+
+  useEffect(() => {
+    axios
+      .get(`/api/sales/${date}/hourly`)
+      .then(response => setHours(response.data))
+      .catch(error => console.log(error));
+  }, [date]);
+
+  return (
+    <Paper
+      sx={{
+        p: 2,
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+    >
+      <Title>Hourly Sales</Title>
+      <Box sx={{ width: '100%' }}>
+        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+          <Tabs value={value} onChange={handleChange} aria-label='basic tabs example'>
+            {hours.map((entry, index) => (
+              <Tab key={index} label={entry.store} {...a11yProps(index)} />
+            ))}
+          </Tabs>
+        </Box>
+        {hours.map((entry, index) => (
+          <CustomTabPanel key={index} value={value} index={index}>
+            <SalesBar hours={entry.details} />
+          </CustomTabPanel>
+        ))}
+      </Box>
+    </Paper>
+  );
+};
+
+export default BasicTab;

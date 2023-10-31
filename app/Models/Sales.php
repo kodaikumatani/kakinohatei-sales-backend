@@ -170,34 +170,36 @@ class Sales extends Model
     public static function findHourlyByDate(Carbon $date)
     {
         $subQueryA = self::query()
-            ->select('hour', 'store_id', 'product_id')
-            ->selectRaw('SUM(products.price * quantity) as value')
-            ->selectRaw('ROW_NUMBER() OVER(PARTITION BY store_id, product_id ORDER BY hour ASC) as num')
+            ->select('hour', 'store_id', 'products.name as product')
+            ->selectRaw('SUM(quantity) as quantity')
+            ->selectRaw('ROW_NUMBER() OVER(PARTITION BY store_id, products.name ORDER BY hour ASC) as num')
             ->join('products', 'products.id', '=', 'sales.product_id')
             ->whereDate('date', $date)
-            ->groupBy('hour', 'store_id', 'product_id');
+            ->groupBy('hour', 'store_id', 'products.name');
 
         $subQueryB = self::query()
-            ->select('hour', 'store_id', 'product_id')
-            ->selectRaw('SUM(products.price * quantity) as value')
-            ->selectRaw('ROW_NUMBER() OVER(PARTITION BY store_id, product_id ORDER BY hour ASC) + 1 as num')
+            ->select('hour', 'store_id', 'products.name as product')
+            ->selectRaw('SUM(quantity) as quantity')
+            ->selectRaw('ROW_NUMBER() OVER(PARTITION BY store_id, products.name ORDER BY hour ASC) + 1 as num')
             ->join('products', 'products.id', '=', 'sales.product_id')
             ->whereDate('date', $date)
-            ->groupBy('hour', 'store_id', 'product_id');
+            ->groupBy('hour', 'store_id', 'products.name');
 
         return self::query()
-            ->selectRaw('A.hour, SUM(A.value - IFNULL(B.value, 0)) as value')
+            ->select('A.hour', 'A.product')
+            ->selectRaw('SUM(A.quantity - IFNULL(B.quantity, 0)) as value')
             ->fromSub($subQueryA, 'A')
             ->leftJoinSub($subQueryB, 'B', function ($join) {
                 $join->on('A.num', '=', 'B.num')
                     ->on('A.store_id', '=', 'B.store_id')
-                    ->on('A.product_id', '=', 'B.product_id');
+                    ->on('A.product', '=', 'B.product');
             })
             ->withCasts([
                 'value' => 'integer',
             ])
-            ->groupBy('hour')
+            ->groupBy('hour', 'A.product')
             ->orderBy('hour')
+            ->orderBy('product')
             ->get();
     }
 }

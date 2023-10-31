@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Sales;
 use Carbon\Carbon;
+use App\Http\Resources\HourlySalesResource;
 
 class GetHourlySalesByDateController extends Controller
 {
@@ -12,12 +13,22 @@ class GetHourlySalesByDateController extends Controller
      */
     public function __invoke(string $date)
     {
-        return response()
-            ->json(
-                ['summary' => Sales::findHourlyByDate(Carbon::parse($date))],
-                200,
-                [],
-                JSON_UNESCAPED_UNICODE,
-            );
+        $hours = Sales::findHourlyByDate(Carbon::parse($date));
+
+        $product = $hours->pluck('product')->unique();
+
+        return response()->json(
+            $product->map(function ($item) use ($hours) {
+                return [
+                    'store' => $item,
+                    'details' => HourlySalesResource::collection(
+                        $hours->where('product', $item)
+                    ),
+                ];
+            }),
+            200,
+            [],
+            JSON_UNESCAPED_UNICODE,
+        );
     }
 }
