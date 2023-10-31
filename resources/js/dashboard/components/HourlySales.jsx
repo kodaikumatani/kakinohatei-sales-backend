@@ -37,7 +37,7 @@ function a11yProps(index) {
   };
 }
 
-const BasicTab = props => {
+const HourlySales = props => {
   const { date } = props;
   const [hours, setHours] = useState([]);
   const [value, setValue] = useState(0);
@@ -80,4 +80,4 @@ const BasicTab = props => {
   );
 };
 
-export default BasicTab;
+export default HourlySales;
