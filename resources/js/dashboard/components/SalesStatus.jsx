@@ -44,8 +44,8 @@ const SalesStatus = props => {
 
   useEffect(() => {
     axios
-      .get(`/api/${date}/stores`)
-      .then(response => setStore(response.data.summary))
+      .get(`/api/sales/daily/${date}`)
+      .then(response => setStore(response.data))
       .catch(error => console.log(error));
   }, [date]);
 
@@ -71,18 +71,14 @@ const SalesStatus = props => {
           scrollButtons='auto'
           aria-label='scrollable auto tabs example'
         >
-          <Tab label='All' {...a11yProps(0)} />
           {store.map((entry, index) => (
-            <Tab label={entry.name} {...a11yProps(index + 1)} />
+            <Tab key={index} label={entry.store} {...a11yProps(index)} />
           ))}
         </Tabs>
       </Box>
-      <TabPanel value={value} index={0}>
-        <SalesTable date={date} query={''} />
-      </TabPanel>
       {store.map((entry, index) => (
-        <TabPanel value={value} index={index + 1}>
-          <SalesTable date={date} query={`?store_id=${entry.store_id}`} />
+        <TabPanel key={index} value={value} index={index}>
+          <SalesTable data={entry.details} />
         </TabPanel>
       ))}
     </Paper>

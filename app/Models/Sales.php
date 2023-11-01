@@ -26,28 +26,11 @@ class Sales extends Model
     ];
 
     /**
-     * 指定日の売上がある店舗を取得
-     *
-     * @param Carbon
-     */
-    public static function findStoreNameByDate(Carbon $date)
-    {
-        return self::query()
-            ->select('store_id', 'stores.name as name')
-            ->whereDate('date', $date)
-            ->join('stores', 'stores.id', '=', 'sales.store_id')
-            ->groupBy('store_id')
-            ->get();
-    }
-
-    /**
-     * TODO: findByと統合する
-     *
      * 指定日の集計を取得
      *
      * @param Carbon
      */
-    private static function findByDate(Carbon $date)
+    public static function findAllStoreByDate(Carbon $date)
     {
         $subQuery = self::query()
             ->select('store_id')
@@ -76,22 +59,18 @@ class Sales extends Model
      *
      * @param Carbon
      */
-    public static function findBy(Carbon $date, int $store_id)
+    public static function findByDate(Carbon $date)
     {
-        if ($store_id == 0) {
-            return self::findByDate($date);
-        }
-
         $subQuery = self::query()
             ->select('store_id', 'product_id')
             ->selectRaw('MAX(date) as max_date')
             ->whereDate('date', $date)
-            ->groupBy('store_id', 'product_id')
-            ->having('store_id', $store_id);
+            ->groupBy('store_id', 'product_id');
 
         return self::query()
-            ->select('products.name as product', 'products.price', 'quantity', 'store_total')
+            ->select('stores.name as store', 'products.name as product', 'products.price', 'quantity', 'store_total')
             ->selectRaw('products.price * quantity as total')
+            ->join('stores', 'stores.id', '=', 'sales.store_id')
             ->join('products', 'products.id', '=', 'sales.product_id')
             ->joinSub($subQuery, 'sub', function ($join) {
                 $join
