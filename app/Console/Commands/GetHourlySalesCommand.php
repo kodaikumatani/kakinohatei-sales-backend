@@ -6,6 +6,8 @@ use App\Http\Controllers\ImapMailController;
 use Google\Exception;
 use Illuminate\Console\Command;
 
+use Carbon\Carbon;
+
 class GetHourlySalesCommand extends Command
 {
     /**
@@ -13,7 +15,7 @@ class GetHourlySalesCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'gmail:read';
+    protected $signature = 'gmail:read {year?}';
 
     /**
      * The console command description.
@@ -29,6 +31,13 @@ class GetHourlySalesCommand extends Command
      */
     public function handle(): void
     {
-        ImapMailController::readToday();
+        $year = $this->argument('year');
+        if ($year == null) {
+            ImapMailController::readToday();
+        }
+
+        if (is_int($year)) {
+            ImapMailController::readByYear(Carbon::create($year));
+        }
     }
 }
