@@ -8,7 +8,7 @@ const SalesBar = props => {
     <ResponsiveContainer aspect='2'>
       <BarChart
         data={hours}
-        margin={{ top: 30, right: 10, bottom: 0, left: -30 }}
+        margin={{ top: 30, right: 10, bottom: 0, left: -20 }}
         barCategoryGap={'20%'}
       >
         <CartesianGrid horizontal={true} vertical={false} />

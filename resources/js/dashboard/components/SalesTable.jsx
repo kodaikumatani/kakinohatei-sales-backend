@@ -3,16 +3,9 @@ import axios from 'axios';
 import { TableContainer, Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
 
 const SalesTable = props => {
-  const { date, query } = props;
+  const { data } = props;
   const NWC = new Intl.NumberFormat();
-  const [sales, setSales] = useState([]);
 
-  useEffect(() => {
-    axios
-      .get(`/api/sales/daily/${date}${query}`)
-      .then(response => setSales(response.data.details))
-      .catch(error => console.log(error));
-  }, [date, query]);
   return (
     <TableContainer>
       <Table size='small' sx={{ tableLayout: 'fixed' }}>
@@ -26,9 +19,9 @@ const SalesTable = props => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {sales.map((entry, index) => (
+          {data.map((entry, index) => (
             <TableRow key={index} sx={{ whiteSpace: 'nowrap' }}>
-              <TableCell>{entry.product}</TableCell>
+              <TableCell>{entry.name}</TableCell>
               <TableCell align='right'>{entry.price}</TableCell>
               <TableCell align='right'>{entry.quantity}</TableCell>
               <TableCell align='right'>{`${NWC.format(entry.total)}`}</TableCell>

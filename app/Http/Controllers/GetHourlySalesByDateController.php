@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\HourlySalesResource;
 use App\Models\Sales;
 use Carbon\Carbon;
-use App\Http\Resources\HourlySalesResource;
 
 class GetHourlySalesByDateController extends Controller
 {
