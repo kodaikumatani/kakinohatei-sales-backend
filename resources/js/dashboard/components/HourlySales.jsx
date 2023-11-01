@@ -6,7 +6,6 @@ import { Paper } from '@mui/material';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
 import SalesBar from './SalesBar';
-import Title from './Title';
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -56,12 +55,11 @@ const HourlySales = props => {
   return (
     <Paper
       sx={{
-        p: 2,
+        p: 1,
         display: 'flex',
         flexDirection: 'column',
       }}
     >
-      <Title>Hourly Sales</Title>
       <Box sx={{ width: '100%' }}>
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <Tabs value={value} onChange={handleChange} aria-label='basic tabs example'>
