@@ -3,32 +3,31 @@
 namespace App\Console\Commands;
 
 use App\Http\Controllers\ImapMailController;
-use Google\Exception;
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 
-class GetHourlySalesCommand extends Command
+class GetSalesByYearCommand extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'gmail:read';
+    protected $signature = 'gmail:read {year}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Read a message in UNREAD box';
+    protected $description = 'Command description';
 
     /**
      * Execute the console command.
-     *
-     * @throws Exception
      */
-    public function handle(): void
+    public function handle()
     {
-        ImapMailController::readToday();
+        $year = $this->argument('year');
+        ImapMailController::readByYear(Carbon::create($year));
     }
 }
