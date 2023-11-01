@@ -34,9 +34,7 @@ class GetHourlySalesCommand extends Command
         $year = $this->argument('year');
         if ($year == null) {
             ImapMailController::readToday();
-        }
-
-        if (is_int($year)) {
+        } else {
             ImapMailController::readByYear(Carbon::create($year));
         }
     }
