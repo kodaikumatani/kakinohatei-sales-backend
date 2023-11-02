@@ -1,6 +1,18 @@
 import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from 'recharts';
 
+export const CustomizedLabel = props => {
+  const { x, y, value } = props;
+
+  if (value != 0) {
+    return (
+      <text x={x} y={y} dy={-4} fill='#666' textAnchor='middle'>
+        {value}
+      </text>
+    );
+  }
+};
+
 const SalesBar = props => {
   const { hours } = props;
 
@@ -12,7 +24,7 @@ const SalesBar = props => {
         barCategoryGap={'20%'}
       >
         <CartesianGrid horizontal={true} vertical={false} />
-        <Bar dataKey='value' fill='#1492C9' label={{ position: 'top' }} />
+        <Bar dataKey='value' fill='#1492C9' label={<CustomizedLabel />} />
         <XAxis
           dataKey='hour'
           type='number'
