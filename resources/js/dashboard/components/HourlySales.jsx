@@ -1,32 +1,32 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import PropTypes from 'prop-types';
-import Tabs from '@mui/material/Tabs';
-import { Paper } from '@mui/material';
-import Tab from '@mui/material/Tab';
-import Box from '@mui/material/Box';
-import SalesBar from './SalesBar';
+import { Paper, Tabs, Tab, Box } from '@mui/material';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from 'recharts';
+import TabPanel from './TabPanel';
 
-function CustomTabPanel(props) {
-  const { children, value, index, ...other } = props;
+const SalesBar = props => {
+  const { hours } = props;
 
   return (
-    <div
-      role='tabpanel'
-      hidden={value !== index}
-      id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
-      {...other}
-    >
-      {value === index && <Box>{children}</Box>}
-    </div>
+    <ResponsiveContainer aspect='2'>
+      <BarChart
+        data={hours}
+        margin={{ top: 30, right: 10, bottom: 0, left: -20 }}
+        barCategoryGap={'20%'}
+      >
+        <CartesianGrid horizontal={true} vertical={false} />
+        <Bar dataKey='value' fill='#1492C9' label={{ position: 'top' }} />
+        <XAxis
+          dataKey='hour'
+          type='number'
+          interval={0}
+          domain={['dataMin - 1', 'dataMax + 1']}
+          ticks={[10, 11, 12, 13, 14, 15, 16, 17, 18, 19]}
+        />
+        <YAxis />
+      </BarChart>
+    </ResponsiveContainer>
   );
-}
-
-CustomTabPanel.propTypes = {
-  children: PropTypes.node,
-  index: PropTypes.number.isRequired,
-  value: PropTypes.number.isRequired,
 };
 
 function a11yProps(index) {
@@ -69,9 +69,9 @@ const HourlySales = props => {
           </Tabs>
         </Box>
         {hours.map((entry, index) => (
-          <CustomTabPanel key={index} value={value} index={index}>
+          <TabPanel key={index} value={value} index={index}>
             <SalesBar hours={entry.details} />
-          </CustomTabPanel>
+          </TabPanel>
         ))}
       </Box>
     </Paper>

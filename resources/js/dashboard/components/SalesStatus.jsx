@@ -1,33 +1,49 @@
 import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
 import axios from 'axios';
-import { Box, Paper, Tab, Tabs, Typography } from '@mui/material';
-import SalesTable from './SalesTable';
+import {
+  Box,
+  Paper,
+  Tab,
+  Tabs,
+  TableContainer,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+} from '@mui/material';
+import TabPanel from './TabPanel';
 
-function TabPanel(props) {
-  const { children, value, index, ...other } = props;
+const SalesTable = props => {
+  const { data } = props;
+  const NWC = new Intl.NumberFormat();
 
   return (
-    <div
-      role='tabpanel'
-      hidden={value !== index}
-      id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
-      {...other}
-    >
-      {value === index && (
-        <Box sx={{ pt: 1 }}>
-          <Typography>{children}</Typography>
-        </Box>
-      )}
-    </div>
+    <TableContainer>
+      <Table size='small' sx={{ tableLayout: 'fixed' }}>
+        <TableHead>
+          <TableRow sx={{ whiteSpace: 'nowrap' }}>
+            <TableCell>商品名</TableCell>
+            <TableCell align='right'>単価</TableCell>
+            <TableCell align='right'>数量</TableCell>
+            <TableCell align='right'>合計額</TableCell>
+            <TableCell align='right'>店舗計</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {data.map((entry, index) => (
+            <TableRow key={index} sx={{ whiteSpace: 'nowrap' }}>
+              <TableCell>{entry.name}</TableCell>
+              <TableCell align='right'>{entry.price}</TableCell>
+              <TableCell align='right'>{entry.quantity}</TableCell>
+              <TableCell align='right'>{`${NWC.format(entry.total)}`}</TableCell>
+              <TableCell align='right'>{entry.store_total}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
   );
-}
-
-TabPanel.propTypes = {
-  children: PropTypes.node,
-  index: PropTypes.number.isRequired,
-  value: PropTypes.number.isRequired,
 };
 
 function a11yProps(index) {
