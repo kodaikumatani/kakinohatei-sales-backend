@@ -6,7 +6,7 @@ import { COLORS } from '../../layouts/Styles';
 import Legend from './Legend';
 import Title from './Title';
 
-const Stores = props => {
+const StoreSales = props => {
   const { date } = props;
   const [stores, setStores] = useState([]);
   const total = new Intl.NumberFormat().format(
@@ -54,4 +54,4 @@ const Stores = props => {
   );
 };
 
-export default Stores;
+export default StoreSales;

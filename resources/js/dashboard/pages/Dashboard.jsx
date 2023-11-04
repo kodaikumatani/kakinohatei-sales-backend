@@ -9,8 +9,8 @@ import {
   Grid,
   Toolbar,
 } from '@mui/material';
-import Stores from '../components/Stores';
-import Products from '../components/Products';
+import StoreSales from '../components/StoreSales';
+import ProductSales from '../components/ProductSales';
 import SalesStatus from '../components/SalesStatus';
 import CalendarAppBar from '../components/CalendarAppBar';
 import HourlySales from '../components/HourlySales';
@@ -40,7 +40,7 @@ const Dashboard = () => {
             <Grid container spacing={3}>
               {/* Sales */}
               <Grid item lg={5} xs={12}>
-                <Stores date={date.format('YYYY-MM-DD')} />
+                <StoreSales date={date.format('YYYY-MM-DD')} />
               </Grid>
               {/* HourlySales */}
               <Grid item lg={7} xs={12}>
@@ -48,7 +48,7 @@ const Dashboard = () => {
               </Grid>
               {/* Products */}
               <Grid item lg={5} xs={12}>
-                <Products date={date.format('YYYY-MM-DD')} />
+                <ProductSales date={date.format('YYYY-MM-DD')} />
               </Grid>
               {/* SaleStatus */}
               <Grid item lg={7} xs={12}>

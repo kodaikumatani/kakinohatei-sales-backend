@@ -6,7 +6,7 @@ import { COLORS } from '../../layouts/Styles';
 import Legend from './Legend';
 import Title from './Title';
 
-const Products = props => {
+const ProductSales = props => {
   const { date } = props;
   const [products, setProducts] = useState([]);
 
@@ -52,4 +52,5 @@ const Products = props => {
     </Paper>
   );
 };
-export default Products;
+
+export default ProductSales;
