@@ -48,7 +48,10 @@ const HourlySales = props => {
   useEffect(() => {
     axios
       .get(`/api/sales/${date}/hourly`)
-      .then(response => setHours(response.data))
+      .then(response => {
+        setHours(response.data);
+        setValue(0);
+      })
       .catch(error => console.log(error));
   }, [date]);
 
