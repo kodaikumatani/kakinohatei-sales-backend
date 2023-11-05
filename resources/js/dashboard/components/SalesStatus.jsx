@@ -55,13 +55,16 @@ function a11yProps(index) {
 
 const SalesStatus = props => {
   const { date } = props;
-  const [value, setValue] = React.useState(0);
+  const [value, setValue] = useState(0);
   const [store, setStore] = useState([]);
 
   useEffect(() => {
     axios
       .get(`/api/sales/daily/${date}`)
-      .then(response => setStore(response.data))
+      .then(response => {
+        setStore(response.data);
+        setValue(0);
+      })
       .catch(error => console.log(error));
   }, [date]);
 
