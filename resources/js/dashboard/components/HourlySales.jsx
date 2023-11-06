@@ -16,17 +16,26 @@ const SalesBar = props => {
       >
         <CartesianGrid horizontal={true} vertical={false} />
         <Bar dataKey='value' fill='#1492C9' label={{ position: 'top' }} />
-        <XAxis
-          dataKey='hour'
-          type='number'
-          interval={0}
-          domain={['dataMin - 1', 'dataMax + 1']}
-          ticks={[10, 11, 12, 13, 14, 15, 16, 17, 18, 19]}
-        />
+        <XAxis dataKey='hour' />
         <YAxis />
       </BarChart>
     </ResponsiveContainer>
   );
+};
+
+const HourlyFormat = props => {
+  const hours = [10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
+  hours.map(item => {
+    const existData = props.some(data => {
+      return data.hour === item;
+    });
+
+    if (!existData) {
+      props.push({ hour: item });
+    }
+  });
+
+  return props;
 };
 
 function a11yProps(index) {
@@ -70,7 +79,7 @@ const HourlySales = props => {
         </Box>
         {hours.map((entry, index) => (
           <TabPanel key={index} value={value} index={index}>
-            <SalesBar hours={entry.details} />
+            <SalesBar hours={HourlyFormat(entry.details)} />
           </TabPanel>
         ))}
       </Box>
