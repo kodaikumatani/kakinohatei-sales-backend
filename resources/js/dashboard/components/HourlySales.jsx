@@ -25,17 +25,14 @@ const SalesBar = props => {
 
 const HourlyFormat = props => {
   const hours = [10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
-  hours.map(item => {
-    const existData = props.some(data => {
-      return data.hour === item;
-    });
 
-    if (!existData) {
-      props.push({ hour: item });
+  return hours.map(item => {
+    const result = props.find(({ hour, value }) => hour == item && value > 0);
+    if (result == undefined) {
+      return { hour: item };
     }
+    return result;
   });
-
-  return props;
 };
 
 function a11yProps(index) {
