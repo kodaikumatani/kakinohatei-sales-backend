@@ -1,0 +1,247 @@
+openapi: 3.0.3
+info:
+  title: 柿の葉亭セールス
+  version: 1.0.0
+servers:
+  - description: localhost
+    url: http://localhost/api/
+tags:
+  - name: sales
+    description: "売上に関する情報"
+paths:
+  /salse/month/{$year}/{$month}:
+    get:
+      tags:
+        - sales
+      summary: 当月の売上集計
+      operationId: getSalesMonth
+      parameters:
+        - $ref: "#/components/parameters/Year"
+        - $ref: "#/components/parameters/Month"
+        - $ref: "#/components/parameters/Store"
+        - $ref: "#/components/parameters/Category"
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Summary"
+  /salse/month/{$year}/{$month}/store:
+    get:
+      tags:
+        - sales
+      summary: 当月の店舗別売上
+      operationId: getSalesMonthStore
+      parameters:
+        - $ref: "#/components/parameters/Year"
+        - $ref: "#/components/parameters/Month"
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Store"
+  /salse/month/{$year}/{$month}/category:
+    get:
+      tags:
+        - sales
+      summary: 当月の品種別売上
+      operationId: getSalesMonthCategory
+      parameters:
+        - $ref: "#/components/parameters/Year"
+        - $ref: "#/components/parameters/Month"
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Category"
+  /salse/day/{$year}/{$month}/{$day}:
+    get:
+      tags:
+        - sales
+      summary: 当日の売上集計
+      operationId: getSalesDay
+      parameters:
+        - $ref: "#/components/parameters/Year"
+        - $ref: "#/components/parameters/Month"
+        - $ref: "#/components/parameters/Day"
+        - $ref: "#/components/parameters/Store"
+        - $ref: "#/components/parameters/Category"
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Summary"
+  /salse/day/{$year}/{$month}/{$day}/store:
+    get:
+      tags:
+        - sales
+      summary: 当日の店舗別売上
+      operationId: getSalesDayStore
+      parameters:
+        - $ref: "#/components/parameters/Year"
+        - $ref: "#/components/parameters/Month"
+        - $ref: "#/components/parameters/Day"
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Store"
+  /salse/day/{$year}/{$month}/{$day}/category:
+    get:
+      tags:
+        - sales
+      summary: 当日の品種別売上
+      operationId: getSalesDayCategory
+      parameters:
+        - $ref: "#/components/parameters/Year"
+        - $ref: "#/components/parameters/Month"
+        - $ref: "#/components/parameters/Day"
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Category"
+components:
+  parameters:
+    Year:
+      name: year
+      in: path
+      required: true
+      schema:
+        type: integer
+        example: 2023
+    Month:
+      name: month
+      in: path
+      required: true
+      schema:
+        type: integer
+        example: 1
+    Day:
+      name: day
+      in: path
+      required: true
+      schema:
+        type: integer
+        example: 1
+    Store:
+      name: store
+      in: query
+      schema:
+        type: array
+        items:
+          type: integer
+          example: 1
+    Category:
+      name: category
+      in: query
+      schema:
+        type: array
+        items:
+          type: integer
+          example: 1
+  schemas:
+    DailySummary:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+          example: "2017-07-21"
+        hour:
+          type: integer
+          example: 10
+        amount:
+          type: integer
+          example: 100
+    MonthlySummary:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+          example: "2017-07-21"
+    Store:
+      required:
+        - id
+        - name
+        - amount
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 10
+        name:
+          type: string
+          example: 白菜
+        amount:
+          type: number
+          format: integer
+          example: 1000
+        products:
+          type: array
+          items:
+            $ref: "#/components/schemas/Product"
+    Category:
+      required:
+        - id
+        - name
+        - quantity
+        - amount
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 10
+        name:
+          type: string
+          example: doggie
+        quantity:
+          type: integer
+          example: 20
+        amount:
+          type: number
+          format: integer
+          example: 10000
+    Product:
+      required:
+        - id
+        - category
+        - price
+        - storeSum
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 10
+        category:
+          $ref: "#/components/schemas/Category"
+        price:
+          type: integer
+          example: 500
+        storeSum:
+          type: integer
+          example: 20
