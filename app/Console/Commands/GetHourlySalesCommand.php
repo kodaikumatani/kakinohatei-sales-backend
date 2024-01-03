@@ -3,10 +3,9 @@
 namespace App\Console\Commands;
 
 use App\Http\Controllers\ImapMailController;
+use Carbon\Carbon;
 use Google\Exception;
 use Illuminate\Console\Command;
-
-use Carbon\Carbon;
 
 class GetHourlySalesCommand extends Command
 {
