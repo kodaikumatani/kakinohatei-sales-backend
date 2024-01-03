@@ -7,10 +7,9 @@ use Exception;
 
 class MailAnalysis
 {
-    /***
+    /**
      * Conversion of email text to first normalization.
      *
-     * @param $internal_date
      * @param $message
      * @return array|null[]
      */
@@ -57,11 +56,12 @@ class MailAnalysis
                 $price = str_replace([',', '円'], '', $items[2]);
                 $quantity = str_replace([',', '個'], '', $items[3]);
                 try {
-                    $store_total = str_replace('個)', '', $items[5]);
+                    $store_sum = str_replace('個)', '', $items[5]);
                 } catch (Exception $e) {
-                    $store_total = null;
+                    $store_sum = null;
                 }
 
+                // FIXME: 商品のグルーピングを実装する
                 if ($product_name == '餅') {
                     $product_name = 'もち';
                 }
@@ -74,7 +74,7 @@ class MailAnalysis
                     'product' => $product_name,
                     'price' => $price,
                     'quantity' => $quantity,
-                    'store_total' => $store_total,
+                    'store_sum' => $store_sum,
                 ];
             }
         }
