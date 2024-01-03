@@ -16,32 +16,14 @@ class ImapMailController extends Controller
 {
     public static function readByYear(Carbon $date)
     {
-        $messages = ManageMailboxes::getMessageByYear($date);
-        foreach ($messages as $message) {
-            $user_id = User::getUserId($message['producer_code']);
-            $store_id = Store::getStoreId($user_id, $message['store']);
-            $product_id = Product::getProductId($user_id, $message['product'], $message['price']);
-            Sales::query()->updateOrCreate(
-                [
-                    'date' => $message['date'],
-                    'hour' => self::roundTime(strtotime($message['date'])),
-                    'user_id' => $user_id,
-                    'store_id' => $store_id,
-                    'product_id' => $product_id,
-                ],
-                [
-                    'quantity' => $message['quantity'],
-                    'store_total' => $message['store_total'],
-                ]
-            );
-        }
+        self::save(ManageMailboxes::getMessageByYear($date));
+        self::sales_save(Log::caluclateSubtotal());
     }
 
     public static function readToday()
     {
-        // $date = Carbon::today();
-        $date = Carbon::parse('2023-12-28');
-        self::save(ManageMailboxes::getMessageByDate($date));
+        self::save(ManageMailboxes::getMessageByDate(Carbon::today()));
+        self::sales_save(Log::caluclateSubtotal());
     }
 
     public static function send()
@@ -72,6 +54,28 @@ class ImapMailController extends Controller
                 [
                     'quantity' => $message['quantity'],
                     'store_sum' => $message['store_sum'],
+                ]
+            );
+        }
+    }
+
+    private static function sales_save($rows)
+    {
+        foreach ($rows as $row) {
+            $user_id = User::getUserId($row['producer_code']);
+            $store_id = Store::getStoreId($user_id, $row['store']);
+            $product_id = Product::getProductId($user_id, $row['product'], $row['price']);
+            Sales::query()->updateOrCreate(
+                [
+                    'date' => $row['date_time'],
+                    'hour' => self::roundTime(strtotime($row['date_time'])),
+                    'user_id' => $user_id,
+                    'store_id' => $store_id,
+                    'product_id' => $product_id,
+                ],
+                [
+                    'quantity' => $row['quantity'],
+                    'store_total' => $row['store_sum'],
                 ]
             );
         }
