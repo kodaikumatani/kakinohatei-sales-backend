@@ -8,29 +8,24 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
-    public function up()
+    public function up(): void
     {
-        Schema::create('stores', function (Blueprint $table) {
+        Schema::create('products', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')
-                ->constrained('users')
+            $table->foreignId('category_id')
+                ->constrained('categories')
                 ->onDelete('cascade');
-            $table->string('name', 100);
-            $table->unique(['user_id', 'name']);
+            $table->unsignedInteger('price');
             $table->timestamps();
         });
     }
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
-    public function down()
+    public function down(): void
     {
-        Schema::dropIfExists('stores');
+        Schema::dropIfExists('products');
     }
 };
