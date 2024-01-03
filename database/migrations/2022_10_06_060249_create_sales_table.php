@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('sales', function (Blueprint $table) {
             $table->id();
-            $table->dateTime('date');
+            $table->date('date');
             $table->unsignedInteger('hour');
             $table->foreignId('user_id')
                 ->constrained('users')
