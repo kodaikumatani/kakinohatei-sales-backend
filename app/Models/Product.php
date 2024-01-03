@@ -15,16 +15,16 @@ class Product extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'user_id',
-        'name',
+        'category_id',
         'price',
     ];
 
-    public static function getProductId($id, $name, $price): int
+    public static function getId($category_id, $price): int
     {
         return self::query()
-            ->firstOrCreate(
-                ['user_id' => $id, 'name' => $name, 'price' => $price],
-            )['id'];
+            ->firstOrCreate([
+                'category_id' => $category_id,
+                'price' => $price
+            ])['id'];
     }
 }

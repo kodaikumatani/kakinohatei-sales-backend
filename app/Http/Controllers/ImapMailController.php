@@ -7,7 +7,7 @@ use App\Models\Log;
 use App\Models\Product;
 use App\Models\Sales;
 use App\Models\Store;
-use App\Models\User;
+use App\Models\Category;
 use App\Service\ManageMailboxes;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Mail;
@@ -62,20 +62,19 @@ class ImapMailController extends Controller
     private static function sales_save($rows)
     {
         foreach ($rows as $row) {
-            $user_id = User::getUserId($row['producer_code']);
-            $store_id = Store::getStoreId($user_id, $row['store']);
-            $product_id = Product::getProductId($user_id, $row['product'], $row['price']);
+            $store_id = Store::getId($row['store']);
+            $category_id = Category::getId($row['product']);
+            $product_id = Product::getId($category_id, $row['price']);
             Sales::query()->updateOrCreate(
                 [
                     'date' => $row['date_time'],
                     'hour' => self::roundTime(strtotime($row['date_time'])),
-                    'user_id' => $user_id,
                     'store_id' => $store_id,
                     'product_id' => $product_id,
                 ],
                 [
                     'quantity' => $row['quantity'],
-                    'store_total' => $row['store_sum'],
+                    'store_sum' => $row['store_sum'],
                 ]
             );
         }

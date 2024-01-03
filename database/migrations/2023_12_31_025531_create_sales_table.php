@@ -8,18 +8,13 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::create('sales', function (Blueprint $table) {
             $table->id();
             $table->date('date');
             $table->unsignedInteger('hour');
-            $table->foreignId('user_id')
-                ->constrained('users')
-                ->onDelete('cascade');
             $table->foreignId('store_id')
                 ->constrained('stores')
                 ->onDelete('cascade');
@@ -27,18 +22,15 @@ return new class extends Migration
                 ->constrained('products')
                 ->onDelete('cascade');
             $table->integer('quantity');
-            $table->integer('store_total')->nullable();
-            $table->unique(['date', 'hour', 'user_id', 'store_id', 'product_id']);
+            $table->integer('store_sum')->nullable();
             $table->timestamps();
         });
     }
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('sales');
     }
