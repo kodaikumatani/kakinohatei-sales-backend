@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Store extends Model
+class Category extends Model
 {
     use HasFactory;
 
@@ -18,9 +18,6 @@ class Store extends Model
         'name',
     ];
 
-    /**
-     * The attributes that are mass assignable.
-     */
     public static function getId($name): int
     {
         return self::query()
