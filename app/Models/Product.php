@@ -24,7 +24,7 @@ class Product extends Model
         return self::query()
             ->firstOrCreate([
                 'category_id' => $category_id,
-                'price' => $price
+                'price' => $price,
             ])['id'];
     }
 }

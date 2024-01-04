@@ -3,11 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Mail\HourlySalesMail;
+use App\Models\Category;
 use App\Models\Log;
 use App\Models\Product;
 use App\Models\Sales;
 use App\Models\Store;
-use App\Models\Category;
 use App\Service\ManageMailboxes;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Mail;
