@@ -31,25 +31,22 @@ class Sales extends Model
      */
     public static function findAllStoreByDate(Carbon $date)
     {
-        $subQuery = self::query()
-            ->select('store_id')
-            ->selectRaw('MAX(date) as max_date')
-            ->whereDate('date', $date)
-            ->groupBy('store_id');
-
         return self::query()
-            ->select('products.name as product', 'products.price')
-            ->selectRaw('SUM(quantity) as quantity')
-            ->selectRaw('SUM(products.price * quantity) as total')
-            ->selectRaw('SUM(store_total) as store_total')
+            ->select('categories.name AS product', 'products.price')
+            ->selectRaw('SUM(quantity) AS quantity')
+            ->selectRaw('SUM(products.price * quantity) AS total')
+            ->selectRaw('SUM(store_sum) AS store_total')
             ->join('products', 'products.id', '=', 'sales.product_id')
-            ->joinSub($subQuery, 'sub', function ($join) {
-                $join
-                    ->on('sales.date', '=', 'sub.max_date')
-                    ->on('sales.store_id', '=', 'sub.store_id');
-            })
-            ->groupBy('product_id')
-            ->orderBy('product_id')
+            ->join('categories', 'categories.id', '=', 'products.category_id')
+            ->whereDate('date', $date)
+            ->groupBy('products.id')
+            ->orderBy('categories.id')
+            ->orderBy('products.id')
+            ->withCasts([
+                'quantity' => 'integer',
+                'total' => 'integer',
+                'store_total' => 'integer',
+            ])
             ->get();
     }
 
@@ -60,24 +57,24 @@ class Sales extends Model
      */
     public static function findByDate(Carbon $date)
     {
-        $subQuery = self::query()
-            ->select('store_id', 'product_id')
-            ->selectRaw('MAX(date) as max_date')
-            ->whereDate('date', $date)
-            ->groupBy('store_id', 'product_id');
-
         return self::query()
-            ->select('stores.name as store', 'products.name as product', 'products.price', 'quantity', 'store_total')
-            ->selectRaw('products.price * quantity as total')
+            ->select('stores.name AS store', 'categories.name AS product', 'products.price')
+            ->selectRaw('SUM(quantity) AS quantity')
+            ->selectRaw('SUM(products.price * quantity) AS total')
+            ->selectRaw('SUM(store_sum) AS store_total')
             ->join('stores', 'stores.id', '=', 'sales.store_id')
             ->join('products', 'products.id', '=', 'sales.product_id')
-            ->joinSub($subQuery, 'sub', function ($join) {
-                $join
-                    ->on('sales.date', '=', 'sub.max_date')
-                    ->on('sales.store_id', '=', 'sub.store_id')
-                    ->on('sales.product_id', '=', 'sub.product_id');
-            })
+            ->join('categories', 'categories.id', '=', 'products.category_id')
+            ->whereDate('date', $date)
+            ->groupBy('stores.id', 'products.id')
+            ->orderBy('stores.id')
+            ->orderBy('categories.id')
             ->orderBy('products.id')
+            ->withCasts([
+                'quantity' => 'integer',
+                'total' => 'integer',
+                'store_total' => 'integer',
+            ])
             ->get();
     }
 
@@ -88,26 +85,17 @@ class Sales extends Model
      */
     public static function findStoreByDate(Carbon $date)
     {
-        $subQuery = self::query()
-            ->select('store_id')
-            ->selectRaw('MAX(date) as max_date')
-            ->whereDate('date', $date)
-            ->groupBy('store_id');
-
         return self::query()
             ->select('stores.name')
-            ->selectRaw('SUM(products.price * quantity) as value')
+            ->selectRaw('SUM(products.price * quantity) AS value')
             ->join('stores', 'stores.id', '=', 'sales.store_id')
             ->join('products', 'products.id', '=', 'sales.product_id')
-            ->joinSub($subQuery, 'sub', function ($join) {
-                $join
-                    ->on('sales.store_id', '=', 'sub.store_id')
-                    ->on('sales.date', '=', 'sub.max_date');
-            })
+            ->whereDate('date', $date)
+            ->groupBy('stores.id')
+            ->orderBy('stores.id')
             ->withCasts([
                 'value' => 'integer',
             ])
-            ->groupByRaw('sales.store_id')
             ->get();
     }
 
@@ -118,25 +106,17 @@ class Sales extends Model
      */
     public static function findProductByDate(Carbon $date)
     {
-        $subQuery = self::query()
-            ->select('store_id')
-            ->selectRaw('MAX(date) as max_date')
-            ->whereDate('date', $date)
-            ->groupBy('store_id');
-
         return self::query()
-            ->select('products.name')
+            ->select('categories.name')
             ->selectRaw('SUM(products.price * quantity) as value')
             ->join('products', 'products.id', '=', 'sales.product_id')
-            ->joinSub($subQuery, 'sub', function ($join) {
-                $join
-                    ->on('sales.date', '=', 'sub.max_date')
-                    ->on('sales.store_id', '=', 'sub.store_id');
-            })
+            ->join('categories', 'categories.id', '=', 'products.category_id')
+            ->whereDate('date', $date)
+            ->groupBy('categories.id')
+            ->orderBy('categories.id')
             ->withCasts([
                 'value' => 'integer',
             ])
-            ->groupBy('products.name')
             ->get();
     }
 
@@ -147,37 +127,18 @@ class Sales extends Model
      */
     public static function findHourlyByDate(Carbon $date)
     {
-        $subQueryA = self::query()
-            ->select('hour', 'store_id', 'products.name as product')
-            ->selectRaw('SUM(quantity) as quantity')
-            ->selectRaw('ROW_NUMBER() OVER(PARTITION BY store_id, products.name ORDER BY hour ASC) as num')
-            ->join('products', 'products.id', '=', 'sales.product_id')
-            ->whereDate('date', $date)
-            ->groupBy('hour', 'store_id', 'products.name');
-
-        $subQueryB = self::query()
-            ->select('hour', 'store_id', 'products.name as product')
-            ->selectRaw('SUM(quantity) as quantity')
-            ->selectRaw('ROW_NUMBER() OVER(PARTITION BY store_id, products.name ORDER BY hour ASC) + 1 as num')
-            ->join('products', 'products.id', '=', 'sales.product_id')
-            ->whereDate('date', $date)
-            ->groupBy('hour', 'store_id', 'products.name');
-
         return self::query()
-            ->select('A.hour', 'A.product')
-            ->selectRaw('SUM(A.quantity - IFNULL(B.quantity, 0)) as value')
-            ->fromSub($subQueryA, 'A')
-            ->leftJoinSub($subQueryB, 'B', function ($join) {
-                $join->on('A.num', '=', 'B.num')
-                    ->on('A.store_id', '=', 'B.store_id')
-                    ->on('A.product', '=', 'B.product');
-            })
+            ->select('hour', 'categories.name AS product')
+            ->selectRaw('SUM(quantity) AS value')
+            ->join('products', 'products.id', '=', 'sales.product_id')
+            ->join('categories', 'categories.id', '=', 'products.category_id')
+            ->whereDate('date', $date)
+            ->groupBy('hour', 'categories.id')
+            ->orderBy('hour')
+            ->orderBy('categories.id')
             ->withCasts([
                 'value' => 'integer',
             ])
-            ->groupBy('hour', 'A.product')
-            ->orderBy('hour')
-            ->orderBy('product')
             ->get();
     }
 }
