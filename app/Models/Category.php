@@ -18,9 +18,13 @@ class Category extends Model
         'name',
     ];
 
-    public static function getId($name): int
-    {
-        return self::query()
-            ->firstOrCreate(['name' => $name])['id'];
-    }
+    /**
+     * キャストする必要のある属性
+     *
+     * @var array
+     */
+    protected $casts = [
+        'id' => 'integer',
+        'name' => 'string',
+    ];
 }

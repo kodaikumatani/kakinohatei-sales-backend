@@ -2,7 +2,12 @@
 
 namespace App\Console\Commands;
 
-use App\Http\Controllers\ImapMailController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\LogController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\SalesController;
+use App\Http\Controllers\StoreController;
+use App\Service\ManageMailboxes;
 use Carbon\Carbon;
 use Google\Exception;
 use Illuminate\Console\Command;
@@ -28,13 +33,15 @@ class GetHourlySalesCommand extends Command
      *
      * @throws Exception
      */
-    public function handle(): void
+    public function handle(LogController $log, SalesController $sales): void
     {
         $year = $this->argument('year');
-        if ($year == null) {
-            ImapMailController::readToday();
+        if ($year != null) {
+            $log->store(ManageMailboxes::getMessageByYear(Carbon::create($year)));
+            $sales->store($log->subtotal(), new StoreController, new CategoryController, new ProductController);
         } else {
-            ImapMailController::readByYear(Carbon::create($year));
+            $log->store(ManageMailboxes::getMessageByDate(Carbon::today()));
+            $sales->store($log->subtotal(), new StoreController, new CategoryController, new ProductController);
         }
     }
 }
