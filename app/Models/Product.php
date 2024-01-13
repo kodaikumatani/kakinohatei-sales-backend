@@ -19,12 +19,13 @@ class Product extends Model
         'price',
     ];
 
-    public static function getId($category_id, $price): int
-    {
-        return self::query()
-            ->firstOrCreate([
-                'category_id' => $category_id,
-                'price' => $price,
-            ])['id'];
-    }
+    /**
+     * キャストする必要のある属性
+     *
+     * @var array
+     */
+    protected $casts = [
+        'id' => 'integer',
+        'name' => 'string',
+    ];
 }

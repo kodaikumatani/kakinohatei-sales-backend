@@ -19,11 +19,12 @@ class Store extends Model
     ];
 
     /**
-     * The attributes that are mass assignable.
+     * キャストする必要のある属性
+     *
+     * @var array
      */
-    public static function getId($name): int
-    {
-        return self::query()
-            ->firstOrCreate(['name' => $name])['id'];
-    }
+    protected $casts = [
+        'id' => 'integer',
+        'name' => 'string',
+    ];
 }

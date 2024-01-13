@@ -2,9 +2,10 @@
 
 namespace App\Console\Commands;
 
-use App\Http\Controllers\ImapMailController;
+use App\Mail\HourlySalesMail;
 use Google\Exception;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Mail;
 
 class SalesRequestCommand extends Command
 {
@@ -29,6 +30,6 @@ class SalesRequestCommand extends Command
      */
     public function handle(): void
     {
-        ImapMailController::send();
+        Mail::send(new HourlySalesMail);
     }
 }

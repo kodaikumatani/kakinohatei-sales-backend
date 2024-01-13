@@ -52,7 +52,6 @@ class MailAnalysis
             $products = array_slice(preg_split('/\r\n/', $store), 1);
             foreach (array_filter($products) as $product) {
                 $items = preg_split("/\s+/", $product);
-                $product_name = str_replace('（鳥取県産）', '', $items[1]);
                 $price = str_replace([',', '円'], '', $items[2]);
                 $quantity = str_replace([',', '個'], '', $items[3]);
                 try {
@@ -61,17 +60,12 @@ class MailAnalysis
                     $store_sum = null;
                 }
 
-                // FIXME: 商品のグルーピングを実装する
-                if ($product_name == '餅') {
-                    $product_name = 'もち';
-                }
-
                 $record[] = [
                     'date' => $date,
                     'producer_code' => $producer_code,
                     'producer' => $producer_name,
                     'store' => $store_name,
-                    'product' => $product_name,
+                    'product' => $items[1],
                     'price' => $price,
                     'quantity' => $quantity,
                     'store_sum' => $store_sum,
